@@ -1,0 +1,13 @@
+---
+title: "2020"
+listing:
+  contents: "2020"
+  sort: "date desc"
+  type: default
+  categories: true
+  sort-ui: false
+  filter-ui: false
+page-layout: full
+---
+
+

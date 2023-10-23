@@ -1,0 +1,694 @@
+/*-- scss:defaults --*/
+
+// use litera as the base
+// https://github.com/thomaspark/bootswatch/tree/v5/dist/litera
+$theme: "litera" !default;
+
+/*
+ * @license
+ * MyFonts Webfont Build ID 3867246, 2020-12-16T11:57:38-0500
+ * 
+ * The fonts listed in this notice are subject to the End User License
+ * Agreement(s) entered into by the website owner. All other parties are 
+ * explicitly restricted from using the Licensed Webfonts(s).
+ * 
+ * You may obtain a valid license at the URLs below.
+ * 
+ * Webfont: Lemon Milk Pro™ by Marsnev
+ * URL: https://www.myfonts.com/collections/lemon-milk-pro-font-marsnev
+ * Copyright: Copyright © 2014 Monotype Imaging Inc. All rights reserved.
+ * 
+ * © 2020 MyFonts Incn
+ */
+
+@font-face {
+  font-family: 'LEMONMILKPro-Regular';
+  src: local('LEMONMILKPro-Regular'), url('fonts/LEMONMILKPro-Regular.woff2') format('woff2'), url('fonts/LEMONMILKPro-Regular.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'LEMONMILKPro-Light';
+  src: local('LEMONMILKPro-Light'), url('fonts/LEMONMILKPro-Light.woff2') format('woff2'), url('fonts/LEMONMILKPro-Light.woff') format('woff');
+}
+
+/*!
+  * @preserve
+  * MonoLisa
+  * Release date: 2022-02-28
+  * This font is subject to a EULA. A user-licence can be acquired at:
+  *   https://monolisa.dev
+  * © 2022 FaceType Foundry. All Rights Reserved.
+  */
+
+@font-face {
+  font-family: 'MonoLisa-Regular';
+  src: local('MonoLisa-Regular'), url('fonts/MonoLisa-Regular.woff2') format('woff2'), url('fonts/MonoLisa-Regular.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'MonoLisa-RegularItalic';
+  src: local('MonoLisa-RegularItalic'), url('fonts/MonoLisa-RegularItalic.woff2') format('woff2'), url('fonts/MonoLisa-RegularItalic.woff') format('woff');
+}
+
+// @import url('https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&display=swap');
+// @import url('https://fonts.googleapis.com/css2?family=Fira+Mono&display=swap');
+
+// fonts
+$font-family-sans-serif: "LEMONMILKPro-Light", Figtree, Helvetica, sans-serif !default;
+$font-family-monospace: "MonoLisa-Regular", "Fira Mono", monospace;
+$headings-font-family: "LEMONMILKPro-Regular", Figtree, Helvetica, sans-serif !default;
+
+// litera bootswatch theme colors
+/*
+$white:    #fff !default;
+$gray-100: #f8f9fa !default;
+$gray-200: #e9ecef !default;
+$gray-300: #ddd !default;
+$gray-400: #ced4da !default;
+$gray-500: #adb5bd !default;
+$gray-600: #868e96 !default;
+$gray-700: #495057 !default;
+$gray-800: #343a40 !default;
+$gray-900: #212529 !default;
+$black:    #000 !default;
+*/
+
+// warmer grays (hue 240)
+$white:    #fff !default;
+$gray-100: #F8F8FA !default;
+$gray-200: #E9E9EF !default;
+$gray-300: #DCDCE6 !default;
+$gray-400: #CECEDA !default;
+$gray-500: #ADADBD !default;
+$gray-600: #868696 !default;
+$gray-700: #494957 !default;
+$gray-800: #343440 !default;
+$gray-900: #212129 !default;
+$black:    #000 !default;
+
+
+/*
+$blue:    #4582ec !default;
+$indigo:  #6610f2 !default;
+$purple:  #6f42c1 !default;
+$pink:    #e83e8c !default;
+$red:     #d9534f !default;
+$orange:  #fd7e14 !default;
+$yellow:  #f0ad4e !default;
+$green:   #02b875 !default;
+$teal:    #20c997 !default;
+$cyan:    #17a2b8 !default;
+*/
+
+//  my colors (comment out above)
+$pink: #D4006A;
+$blue: #006AD4;
+$green: #00D46A;
+$cyan: #00D4D4;
+$red: #D40000;
+$indigo: #0000D4;
+$purple: #6A00D4;
+$orange: #D46A00;
+$yellow: #D4D400;
+$green-bright: #6AD400;
+
+$primary:       $green !default;
+$secondary:     $gray-400 !default;
+$success:       $green !default;
+$info:          $green-bright !default;
+$warning:       $orange !default;
+$danger:        $red !default;
+$light:         $gray-100 !default;
+$dark:          $gray-900 !default;
+
+$second-color:  $green-bright;
+$third-color:   $orange;
+
+// font sizes;
+$font-size-base:    1rem !default; // Assumes the browser default, typically `16px`
+$h1-font-size:      $font-size-base * 2.5 !default;
+$h2-font-size:      $font-size-base * 2 !default;
+$h3-font-size:      $font-size-base * 1.75 !default;
+$h4-font-size:      $font-size-base * 1.5 !default;
+$h5-font-size:      $font-size-base * 1.25 !default;
+$h6-font-size:      $font-size-base !default;
+
+
+// colour tweaks to theme
+// to make it dark
+$body-bg: $dark;
+$body-color: $light;
+$navbar-bg: $body-bg;
+$navbar-fg: $body-color;
+$code-bg: $dark;
+$code-color: $second-color;
+$card-bg: $body-bg;
+$card-border-color: $gray-700;
+
+// font size and OpenType tweaks - adjust to make Fira Mono same size as Lemon Milk Light
+$code-font-size: $font-size-base;
+
+code {
+  font-feature-settings: 'dlig' 0, 'liga' 0, 'calt' 1, 'zero' 1, 'ss02' 0;
+}
+
+code span.co {
+  font-family: "MonoLisa-RegularItalic", "Fira Mono", monospace;
+}
+
+h1 code {
+  font-size: $h1-font-size;
+}
+
+h2 code {
+  font-size: $h2-font-size;
+}
+
+h3 code {
+  font-size: $h3-font-size;
+}
+
+h4 code {
+  font-size: $h4-font-size;
+}
+
+h5 code {
+  font-size: $h5-font-size;
+}
+
+h6 code {
+  font-size: $h6-font-size;
+}
+
+
+// callouts
+$callout-color-note: $blue;
+$callout-color-tip: $green;
+$callout-color-caution: $purple;
+$callout-color-warning: $orange;
+$callout-color-important: $red;
+
+
+
+/*-- scss:rules --*/
+
+
+// color classes
+.primary {
+  color: $primary;
+}
+
+.second-color {
+  color: $second-color;
+}
+
+.third-color {
+  color: $third-color;
+}
+
+// code
+pre.sourceCode {
+  border-radius: 0;
+  border-left-color: $gray-700;
+}
+
+// light vs dark modes
+.light-mode {
+  display: none; 
+}
+.dark-mode {
+  display: block;
+}
+
+// links
+a {
+  color: $body-color;
+  text-decoration-thickness: 1px;
+  //text-underline-offset: .1rem;
+  //text-underline-position: under;
+}
+
+a:hover {
+  color: $primary;
+  text-decoration-color: $primary;
+}
+
+.toc-actions a {
+  text-decoration: none !important;  
+  border-bottom: 0;
+}
+
+.toc-actions a:hover {
+  color: $primary;
+}
+
+div.tippy-content a:hover {
+  text-decoration-color: $primary;
+}
+
+// navbar
+/*
+.navbar-title {
+  font-size: $font-size-base * 1.75;
+}
+*/
+
+// the line in the navbar logo
+// animation defined in ek-styles.css
+.icon-line {
+  display: block;
+  background: $primary;
+  width: 100%;
+  height: 6px;
+  margin: auto;
+  display: table;
+  margin-top: -6px;
+  margin-bottom: -6px;
+}
+
+/* keep text the body colour when active
+this was a change in Quarto 1.2 - now defaults to a darker shade of $primary
+would be fine, except that I want to target the different list items to keep 
+the color that matches the card
+
+.navbar-dark .navbar-nav .show > .nav-link, .navbar-dark .navbar-nav .active > .nav-link, .navbar-dark .navbar-nav .nav-link.active {
+    color: $body-color;
+}
+*/
+
+// hover on navbar
+.navbar-expand-lg .navbar-nav .nav-link:hover {
+  color: $primary;
+}
+.navbar-expand-lg .navbar-nav .nav-link.active {
+  color: $primary;
+}
+
+// then override colors so they match cards
+#navbarCollapse > ul > li:nth-child(2) > a:hover,
+#navbarCollapse > ul > li:nth-child(4) > a:hover {
+  color: $second-color;
+}
+
+#navbarCollapse > ul > li:nth-child(2) > a.nav-link.active,
+#navbarCollapse > ul > li:nth-child(4) > a.nav-link.active {
+  color: $second-color;
+}
+
+#navbarCollapse > ul > li:nth-child(3) > a:hover,
+#navbarCollapse > ul > li:nth-child(5) > a:hover {
+  color: $third-color;
+}
+
+#navbarCollapse > ul > li:nth-child(3) > a.nav-link.active,
+#navbarCollapse > ul > li:nth-child(5) > a.nav-link.active {
+  color: $third-color;
+}
+
+
+// stop the name in my icon from changing colour on hover
+.navbar-title:hover {
+  color: $body-color;
+}
+
+// animated underline on hover, when navbar shows as row
+@media screen and (min-width: 992px) {
+  a.nav-link {
+    position: relative;
+  }
+  
+  .navbar .navbar-nav .nav-item {
+    position: relative;
+  }
+  
+  .navbar .navbar-nav .nav-item::after {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    background-color: $primary;
+    width: 0%;
+    content: "";
+    height: 4px;
+    transition: all 0.3s;
+  }
+  
+  .navbar .navbar-nav .nav-item:nth-child(2)::after, 
+  .navbar .navbar-nav .nav-item:nth-child(4)::after {
+    background-color: $second-color;
+  }
+  
+  .navbar .navbar-nav .nav-item:nth-child(3)::after, 
+  .navbar .navbar-nav .nav-item:nth-child(5)::after {
+    background-color: $third-color;
+  }
+  
+  .navbar .navbar-nav .nav-item:hover::after {
+    width: 90%;
+  }
+}
+
+
+// header styles (more in ek-styles.css)
+#quarto-header {
+  text-transform: uppercase;
+  //font-family: "LEMONMILKPro-Regular", Jost, Helvetica, sans-serif;
+  font-family: $headings-font-family;
+}
+
+/*
+h1, h2, h3, h4, h5 {
+  text-transform: uppercase;
+}
+*/
+
+.heading-font {
+  font-family: $headings-font-family;
+}
+
+.home-header {
+  font-family: $headings-font-family;
+  font-size: $font-size-base * 3;
+}
+
+h2, .h2 {
+    border-bottom: 1px solid $gray-700;
+    padding-bottom: .5rem;
+}
+
+// iframes for slides embedded in talks pages
+iframe.slide-deck {
+  border: 3px solid $gray-700;
+  width: 100%;
+}
+
+.ar4x3 {
+  aspect-ratio: 4 / 3;  
+}
+
+.ar3x2 {
+  aspect-ratio: 3 / 2;  
+}
+
+// icon-links
+.icon-link, div.quarto-about-jolla .about-link {
+    background-color: transparent;
+    color: $primary;
+    // border: 2px solid !important;
+    border: 2px solid;
+    border-color: $primary;
+    padding: 5px .4rem 5px .4rem !important;
+    margin-top: 4px;
+    margin-right: 8px;
+    margin-bottom: 4px;
+    border-radius: 5px; 
+    display: inline-block;
+    text-decoration: none;
+}
+
+.icon-link:hover, div.quarto-about-jolla .about-link:hover{
+    background-color: $primary;
+    border-color: $primary;
+    color: $body-bg;
+    text-decoration: none;
+}
+
+// for cards on home page
+#card-first-color {
+  background-color: $body-bg;
+  border: 4px solid $primary;
+  border-radius: 5px; 
+}
+
+#card-second-color {
+  background-color: $body-bg;
+  border: 4px solid $second-color;
+  border-radius: 5px; 
+}
+
+#card-third-color {
+  background-color: $body-bg;
+  border: 4px solid $third-color;
+  border-radius: 5px; 
+}
+
+
+.card-link {
+    background-color: $primary;
+    color: $body-bg;
+    border: 4px solid $primary;
+    border-color: $primary;
+    padding: 5px .5rem 5px .5rem !important;
+    margin: 0;
+    border-radius: 5px; 
+    display: inline-block;
+    text-decoration: none;  
+    font-size: $h5-font-size;
+}
+
+.card-link:hover {
+  background-color: $body-bg;
+  color: $primary;
+}
+
+.second-color-link{
+    background-color: $second-color;
+    border-color: $second-color;
+    color: $body-bg;
+}
+
+.second-color-link:hover {
+  color: $second-color;
+  border-color: $second-color;
+}
+
+.third-color-link{
+    background-color: $third-color;
+    border-color: $third-color;
+    color: $body-bg;
+}
+
+.third-color-link:hover {
+  color: $third-color;
+  border-color: $third-color;
+}
+
+kbd {
+  background-color: $body-bg;
+}
+
+
+
+/*  
+pre.sourceCode {
+  border-radius: 0;
+  border-left-color: $gray-700;
+}
+
+.navbar-brand > img {
+  max-height: 60px;
+  width: auto;
+  //margin-top: 18px;
+}
+
+.navbar-expand-lg .navbar-nav .nav-link:hover {
+  color: $primary;
+}
+
+a {
+  color: $body-color;
+  text-decoration-thickness: 1.5px;
+  //text-underline-offset: 2px;
+  //text-underline-position: under;
+}
+
+a:hover {
+  color: $primary;
+  text-decoration-color: $primary;
+}
+
+/*
+.navbar-brand > img {
+  max-height: 60px;
+  width: 78px;
+  //margin-top: 18px;
+}
+
+
+.navbar-brand > img {
+  width: 0px;
+  height: 0px;
+  padding: 30px 39px;
+  background: url("ELLAKAYE-logo-dark.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.icon-line {
+  display: block;
+  background: $primary;
+  width: 100%;
+  height: 5px;
+  margin: auto;
+  display: table;
+  margin-top: -4px;
+  margin-bottom: -4px;
+}
+
+// navbar link animation
+// come back to this...
+// https://codingyaar.com/responsive-bootstrap-navbar-underline-animation/.navbar-expand-lg 
+
+.navbar-nav .nav-link:hover {
+  text-decoration: underline;
+  text-decoration-color: $primary;
+}
+
+// header styles
+#quarto-header {
+  text-transform: uppercase;
+  font-family: "LEMONMILKPro-Regular", Jost, Helvetica, sans-serif;
+}
+
+h1, h2, h3 {
+  text-transform: uppercase;
+}
+
+
+
+iframe.slide-deck-4-3 {
+  border: 3px solid $gray-300;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+}
+
+.icon-link, div.quarto-about-jolla .about-link {
+    background-color: transparent;
+    color: $primary;
+    border: 2px solid !important;
+    border-color: $primary;
+    padding: 5px .4rem 5px .4rem !important;
+    margin-top: 4px;
+    margin-right: 8px;
+    margin-bottom: 4px;
+    border-radius: 5px; 
+    display: inline-block;
+    text-decoration: none;
+}
+
+.icon-link:hover, div.quarto-about-jolla .about-link:hover{
+    background-color: $primary;
+    border-color: $primary;
+    color: $body-bg;
+    text-decoration: none;
+}
+
+
+#card-first-color {
+  background-color: $body-bg;
+  border: 4px solid $primary;
+  border-radius: 5px; 
+}
+
+
+#card-second-color {
+  background-color: $body-bg;
+  border: 4px solid $second-color;
+  border-radius: 5px; 
+}
+
+#card-third-color {
+  background-color: $body-bg;
+  border: 4px solid $third-color;
+  border-radius: 5px; 
+}
+
+.heading-font {
+  font-family: $headings-font-family;
+}
+
+#navbarCollapse > ul > li:nth-child(2) > a:hover {
+  color: $second-color;
+}
+
+#navbarCollapse > ul > li:nth-child(3) > a:hover {
+  color: $third-color;
+}
+
+#navbarCollapse > ul > li:nth-child(4) > a:hover {
+  color: $second-color;
+}
+
+#navbarCollapse > ul > li:nth-child(5) > a:hover {
+  color: $third-color;
+}
+
+.home-header {
+  font-family: $headings-font-family;
+  font-size: $font-size-base * 3;
+}
+
+.primary {
+  color: $primary;
+}
+
+.second-color {
+  color: $second-color;
+}
+
+.third-color {
+  color: $third-color;
+}
+
+/*
+.card-body > p {
+  margin-bottom: 6px;
+}
+
+.card-body > .icon-link {
+  padding-bottom: 0;
+  padding-top: 0;
+}
+
+.card-link {
+    background-color: $primary;
+    color: $body-bg;
+    border: 4px solid $primary;
+    border-color: $primary;
+    padding: 5px .5rem 5px .5rem !important;
+    margin: 0;
+    border-radius: 5px; 
+    display: inline-block;
+    text-decoration: none;  
+    font-size: $h5-font-size;
+}
+
+.card-link:hover {
+  background-color: $body-bg;
+  color: $primary;
+}
+
+.second-color-link{
+    background-color: $second-color;
+    border-color: $second-color;
+    color: $body-bg;
+}
+
+.second-color-link:hover {
+  color: $second-color;
+  border-color: $second-color;
+}
+
+.third-color-link{
+    background-color: $third-color;
+    border-color: $third-color;
+    color: $body-bg;
+}
+
+.third-color-link:hover {
+  color: $third-color;
+  border-color: $third-color;
+}
+*/
+

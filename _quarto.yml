@@ -1,19 +1,35 @@
 project:
   type: website
-
+  preview:
+    port: 4321
+    
 website:
-  title: "advent-of-code"
+  title: "Advent of Code"
+  #site-url: https://adventofcode.ellakaye.co.uk
+  description: Ella Kaye's solutions to Advent of Code
+  repo-url: https://github.com/EllaKaye/advent-of-code
   navbar:
+    #title: "ADVENT<span class='icon-line'></span>OF CODE"
     right:
-      - about.qmd
+      - 2020.qmd
       - icon: github
-        href: https://github.com/
-      - icon: twitter
-        href: https://twitter.com
+        href: https://github.com/EllaKaye/advent-of-code
+  open-graph: true
+
 format:
   html:
-    theme: cosmo
-    css: styles.css
+    theme: 
+      light: assets/ek-theme-light.scss
+      dark: assets/ek-theme-dark.scss
+    css: assets/ek-styles.css
+    code-block-border-left: true
+    highlight-style: 
+      light: assets/ek-light.theme
+      dark: assets/ek-dark.theme
+    smooth-scroll: true
+    link-external-newwindow: true
+
+editor: source
 
 
 
