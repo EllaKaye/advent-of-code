@@ -16,6 +16,12 @@ website:
         href: https://github.com/EllaKaye/advent-of-code
   open-graph: true
 
+execute:
+  freeze: auto
+  echo: true
+  message: true
+  warning: true
+
 format:
   html:
     theme: 
@@ -28,6 +34,12 @@ format:
       dark: assets/ek-dark.theme
     smooth-scroll: true
     link-external-newwindow: true
+    toc: true    
+    toc-depth: 3
+    toc-title: Contents
+    code-fold: show
+    code-summary: "Toggle the code"
+    code-tools: true
 
 editor: source
 
