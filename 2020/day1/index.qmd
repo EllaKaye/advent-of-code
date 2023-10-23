@@ -1,0 +1,58 @@
+---
+title: Day 1
+date: 2020-12-1
+author: 
+  - name: Ella Kaye
+categories:
+  - TAG_1
+  - TAG_2
+open-graph: true
+draft: false
+---
+
+## Setup
+
+[The original challenge](https://adventofcode.com/2020/day/1)
+
+[My data](../../input/2020/day1.txt)
+
+```{r}
+#| eval: true
+input <- readLines(here::here("input", "2020", "day1.txt"))
+```
+
+## Part 1
+
+## Part 2
+
+
+##### Session info {.appendix}
+
+<details><summary>Toggle</summary>
+
+```{r}
+#| echo: false
+library(sessioninfo)
+# save the session info as an object
+pkg_session <- session_info(pkgs = "attached")
+
+# get the quarto version
+quarto_version <- system("quarto --version", intern = TRUE)
+
+# inject the quarto info
+pkg_session$platform$quarto <- paste(
+  system("quarto --version", intern = TRUE), 
+  "@", 
+  quarto::quarto_path()
+  )
+
+# print it out
+pkg_session
+```
+
+</details>
+
+
+
+
+
