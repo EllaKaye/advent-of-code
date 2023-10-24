@@ -17,6 +17,9 @@ aoc_url <- function(day, year = NULL) {
 
 # get and save the input for a given day and year
 # adapted from https://github.com/dgrtwo/adventdrob/blob/main/R/input.R
+# for instructions on how to find your session token,
+# see https://github.com/dgrtwo/adventdrob/tree/main#installation
+# it can then be set with usethis::edit_r_environ()
 aoc_get_input <- function(day, year = NULL) {
 	if (is.null(year)) year <- current_year()
 	

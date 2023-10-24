@@ -1,5 +1,7 @@
 project:
   type: website
+  resources:
+    R
   preview:
     port: 4321
     
