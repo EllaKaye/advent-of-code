@@ -4,34 +4,28 @@ current_year <- function() {
 }
 
 # get the input url given day and year
-advent_input_url <- function(day, year = NULL) {
-	if (is.null(year)) {
-		year <- current_year()
-	}
+aoc_input_url <- function(day, year = NULL) {
+	if (is.null(year)) year <- current_year()
 	paste0("https://adventofcode.com/", year, "/day/", day, "/input")
 }
 
 # get the url given day and year
-advent_url <- function(day, year = NULL) {
-	if (is.null(year)) {
-		year <- current_year()
-	}
+aoc_url <- function(day, year = NULL) {
+	if (is.null(year)) year <- current_year()
 	paste0("https://adventofcode.com/", year, "/day/", day)
 }
 
 # get and save the input for a given day and year
 # adapted from https://github.com/dgrtwo/adventdrob/blob/main/R/input.R
-get_advent_input <- function(day, year = NULL) {
-	if (is.null(year)) {
-		year <- current_year()
-	}
+aoc_get_input <- function(day, year = NULL) {
+	if (is.null(year)) year <- current_year()
 	
 	session <- Sys.getenv("ADVENT_SESSION")
 	if (session == "") {
 		stop("Must set ADVENT_SESSION in .Renviron")
 	}
 	
-	url <- advent_input_url(day, year)
+	url <- aoc_input_url(day, year)
 	
 	year_path <- here::here("input", year)
 	path <- paste0(year_path, "/", "day", day, ".txt")
@@ -47,10 +41,8 @@ get_advent_input <- function(day, year = NULL) {
 }
 
 # copy post-template to create a new post for a given day and year
-new_advent_post <- function(day, year = NULL) {
-	if (is.null(year)) {
-		year <- current_year()
-	}
+aoc_new_post <- function(day, year = NULL) {
+	if (is.null(year)) year <- current_year()
 	
 	from_post <- here::here("post-template")
 	to_post <- here::here(year, paste0("day", day))
@@ -75,21 +67,35 @@ new_advent_post <- function(day, year = NULL) {
 	
 }
 
-delete_advent_post <- function(day, year = NULL) {
-	if (is.null(year)) {
-		year <- current_year()
-	}
+# delete a post for a given day and year
+aoc_delete_post <- function(day, year = NULL) {
+	if (is.null(year)) year <- current_year()
 	
 	post <- here::here(year, paste0("day", day))
 	unlink(post, recursive = TRUE)
 }
 
-# new_day function gets input and creates a new post
-new_day <- function(day, year = NULL) {
-	if (is.null(year)) {
-		year <- current_year()
-	}
+# delete the input for a given day and year
+aoc_delete_input <- function(day, year = NULL) {
+	if (is.null(year)) year <- current_year()
 	
-	get_advent_input(day, year)
-	new_advent_post(day, year)
+	input <- here::here("input", year, paste0("day", day, ".txt"))
+	unlink(input)
 }
+
+# aoc_new_day function gets input and creates a new post
+aoc_new_day <- function(day, year = NULL) {
+	if (is.null(year)) year <- current_year()
+	
+	aoc_get_input(day, year)
+	aoc_new_post(day, year)
+}
+
+# aoc_delete_day function deletes input and post
+aoc_delete_day <- function(day, year = NULL) {
+	if (is.null(year)) year <- current_year()
+	
+	aoc_delete_input(day, year)
+	aoc_delete_post(day, year)
+}
+

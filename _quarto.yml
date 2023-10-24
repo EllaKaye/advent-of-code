@@ -10,8 +10,9 @@ website:
   repo-url: https://github.com/EllaKaye/advent-of-code
   navbar:
     #title: "ADVENT<span class='icon-line'></span>OF CODE"
+    left:
+      - 2020.qmd    
     right:
-      - 2020.qmd
       - icon: github
         href: https://github.com/EllaKaye/advent-of-code
   open-graph: true
