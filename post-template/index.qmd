@@ -16,12 +16,12 @@ draft: false
 
 [My data](../../input/YYYY/dayDD.txt)
 
+## Part 1
+
 ```{r}
 #| eval: false
 input <- readLines(here::here("input", "YYYY", "dayDD.txt"))
 ```
-
-## Part 1
 
 ## Part 2
 
