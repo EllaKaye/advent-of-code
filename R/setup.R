@@ -36,8 +36,8 @@ aoc_get_input <- function(day, year = NULL) {
 	}
 	
 	req <- httr::GET(url,
-									 httr::set_cookies(session = session),
-									 httr::write_disk(path, overwrite = TRUE))
+		httr::set_cookies(session = session),
+		httr::write_disk(path, overwrite = TRUE))
 }
 
 # copy post-template to create a new post for a given day and year
