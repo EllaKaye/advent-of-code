@@ -58,7 +58,7 @@ aoc_new_post <- function(day, year = NULL) {
 	# get index.qmd from the new post
 	index <- readLines(paste0(to_post, "/index.qmd"))
 	
-	# replace title and YYYY and DD placeholders
+	# replace YYYY and DD placeholders
 	index_with_year <- gsub("YYYY", year, index)
 	index_with_day <- gsub("DD", day, index_with_year)
 	
