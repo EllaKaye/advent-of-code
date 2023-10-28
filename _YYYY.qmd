@@ -1,0 +1,12 @@
+---
+title: "YYYY"
+listing:
+  contents: "YYYY"
+  sort: "date"
+  type: table
+  categories: true
+  sort-ui: false
+  filter-ui: false
+  fields: [date, title, categories]
+code-tools: false
+---

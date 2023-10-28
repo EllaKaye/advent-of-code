@@ -47,6 +47,11 @@ aoc_get_input <- function(day, year = NULL) {
 aoc_new_post <- function(day, year = NULL) {
 	if (is.null(year)) year <- current_year()
 	
+	# if year directory doesn't exist, create it
+	if (!dir.exists(here::here(year))) {
+		dir.create(here::here(year))
+	}
+	
 	from_post <- here::here("post-template")
 	to_post <- here::here(year, paste0("day", day))
 	
@@ -102,3 +107,28 @@ aoc_delete_day <- function(day, year = NULL) {
 	aoc_delete_post(day, year)
 }
 
+# aoc_new_year copies the listing template _YYYY.qmd
+# and creates new directories for the posts and input
+aoc_new_year <- function(year = NULL) {
+	if (is.null(year)) year <- current_year()
+	
+	# create new directory for the posts, if it doesn't exist
+	if (!dir.exists(here::here(year))) {
+		dir.create(here::here(year))
+	}
+	
+	# create new directory for the input, if it doesn't exist
+	input_path <- here::here("input", year)
+	if (!dir.exists(input_path)) {
+		dir.create(input_path)
+	}
+	
+	# copy the _YYYY.qmd to year.qmd
+	file.copy(here::here("_YYYY.qmd"), here::here(paste0(year, ".qmd")))
+	
+	# read year.qmd, replace YYYY with the year, then write it as year.qmd
+	year_qmd <- readLines(here::here(paste0(year, ".qmd")))
+	year_qmd_with_year <- gsub("YYYY", year, year_qmd)
+	writeLines(year_qmd_with_year, here::here(paste0(year, ".qmd")))
+
+}
