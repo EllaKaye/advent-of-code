@@ -22,8 +22,8 @@ website:
 execute:
   freeze: auto
   echo: true
-  message: true
-  warning: true
+  message: false
+  warning: false
 
 format:
   html:

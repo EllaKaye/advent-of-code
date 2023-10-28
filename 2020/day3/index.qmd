@@ -1,0 +1,141 @@
+---
+title: Day 3
+date: 2020-12-3
+author: 
+  - name: Ella Kaye
+categories:
+  - tidyverse
+  - matrix
+open-graph: true
+draft: false
+---
+
+## Setup
+
+[The original challenge](https://adventofcode.com/2020/day/3)
+
+[My data](../../input/2020/day3.txt)
+
+## Part 1
+
+Starting at the top left corner of the map, how many trees ("#") do we encounter, going at a trajectory of 3 right and 1 down?
+
+First, read in the data and save it into a matrix. My method here feels really hack-y. I'm sure there must be a better approach. 
+
+```{r, message = FALSE}
+library(tidyverse)
+
+tree_map <- 
+  read_tsv(here::here("input", "2020","day3.txt"), col_names = FALSE)
+
+num_col <- tree_map %>%
+  mutate(length = str_length(X1)) %>%
+  slice(1) %>%
+  pull(length)
+
+tree_vec <- tree_map %>%
+  mutate(X1 = strsplit(X1, split = character(0), fixed = TRUE)) %>%
+  pull(X1) %>%
+  unlist()
+
+tree_mat <- matrix(tree_vec, ncol = num_col, byrow = TRUE)
+```
+
+Now work my way across and down the matrix, using the `%%` modulo operator to loop round where necessary. The `-1` and `+1` in the line `((y + right - 1) %% num_col) + 1` is a hack to get round the fact that, for `num_col` columns, the modulo runs from `0` to `num_col - 1`, but the column indexes for our matrix run from `1` to `num_col`.  
+
+```{r, message = FALSE}
+right <- 3
+down <- 1
+
+num_rows <- nrow(tree_mat)
+num_col <- ncol(tree_mat)
+
+# start counting trees encountered
+trees <- 0
+
+# start square
+x <- 1
+y <- 1
+  
+while (x <= num_rows) {
+  
+  # cat("row: ", x, "col: ", y, "\n")
+  
+  if (tree_mat[x,y] == "#") trees <- trees + 1
+  
+  x <- x + down
+  y <- ((y + right - 1) %% num_col) + 1
+  
+}
+
+trees
+```
+
+## Part 2
+
+We now need to check several other trajectories, and multiply together the number of trees we find, so we wrap the Part 1 code into a function.
+
+```{r, message = FALSE}
+slope_check <- function(tree_mat, right, down) {
+  
+  num_rows <- nrow(tree_mat)
+  num_col <- ncol(tree_mat)
+
+  # start counting trees encountered
+  trees <- 0
+
+  # start square
+  x <- 1
+  y <- 1
+  
+  while (x <= num_rows) {
+  
+    if (tree_mat[x,y] == "#") trees <- trees + 1
+  
+    x <- x + down
+    y <- ((y + right - 1) %% num_col) + 1
+  
+  }
+  trees
+}
+
+prod(slope_check(tree_mat, 1, 1),
+     slope_check(tree_mat, 3, 1),
+     slope_check(tree_mat, 5, 1),
+     slope_check(tree_mat, 7, 1),
+     slope_check(tree_mat, 1, 2))
+```
+
+
+
+
+##### Session info {.appendix}
+
+<details><summary>Toggle</summary>
+
+```{r}
+#| echo: false
+library(sessioninfo)
+# save the session info as an object
+pkg_session <- session_info(pkgs = "attached")
+
+# get the quarto version
+quarto_version <- system("quarto --version", intern = TRUE)
+
+# inject the quarto info
+pkg_session$platform$quarto <- paste(
+  system("quarto --version", intern = TRUE), 
+  "@", 
+  quarto::quarto_path()
+  )
+
+# print it out
+pkg_session
+```
+
+</details>
+
+
+
+
+

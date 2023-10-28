@@ -1,0 +1,20 @@
+---
+title: Introduction
+date: 2020-12-1
+author: 
+  - name: Ella Kaye
+    url: https://ellakaye.co.uk
+open-graph: true
+draft: false
+code-tools: false
+---
+
+:::{.callout-note collapse=false}
+I originally published my solutions to the 2020 Advent of Code as [one long post](https://ellakaye.co.uk/advent-of-code-2020). I've since moved them to this dedicated Advent of Code site and split them into a separate post for each day. The date of each post is the day the challenge was released, not the day I solved it. I've updated the paths to my data, but otherwise the content is unchanged.
+:::
+
+[Advent of Code](https://adventofcode.com) is a series of small programming challenges, released daily throughout December in the run-up to Christmas. Part 1 of the challenge is given first. On its successful completion, Part 2 is revealed. The challenges are designed to be solved in any programming language. I will be using R. 
+
+There will no doubt be a wide variety of ways to solve these problems. I'm going to go with the first thing I think of that gets the right answer. In most cases, I expect that there will be more concise and efficient solutions. Most of the time I'm working in R, it's within the [tidyverse](https://www.tidyverse.org), so I imagine that framework will feature heavily.
+
+Each participant gets different input data, so my numerical solutions may be different from others. If you're not signed up for Advent of Code yourself, but want to follow along with my data, you can download it from the 'My data' link in the Setup section of each post. 
