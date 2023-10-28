@@ -4,15 +4,19 @@ current_year <- function() {
 }
 
 # get the input url given day and year
-aoc_input_url <- function(day, year = NULL) {
+aoc_input_url <- function(day, year = NULL, browse = FALSE) {
 	if (is.null(year)) year <- current_year()
-	paste0("https://adventofcode.com/", year, "/day/", day, "/input")
+	url <- paste0("https://adventofcode.com/", year, "/day/", day, "/input")
+	if (browse) utils::browseURL(url)
+	url
 }
 
 # get the url given day and year
-aoc_url <- function(day, year = NULL) {
+aoc_url <- function(day, year = NULL, browse = FALSE) {
 	if (is.null(year)) year <- current_year()
-	paste0("https://adventofcode.com/", year, "/day/", day)
+	url <- paste0("https://adventofcode.com/", year, "/day/", day)
+	if (browse) utils::browseURL(url)
+	url
 }
 
 # get and save the input for a given day and year
@@ -30,34 +34,47 @@ aoc_get_input <- function(day, year = NULL) {
 	
 	url <- aoc_input_url(day, year)
 	
-	year_path <- here::here("input", year)
-	path <- paste0(year_path, "/", "day", day, ".txt")
+	year_path <- here::here(year)
+	day_path <- paste0(year_path, "/", "day", day)
+	input_path <- paste0(day_path, "/input.txt")
 	
-	# check if there's a directory for the year in data and create one if not
+	# check if there's a directory for the year and create one if not
 	if (!dir.exists(year_path)) {
 		dir.create(year_path)
 	}
 	
+	# check if there's a directory for the day and create one if not
+	if (!dir.exists(day_path)) {
+		dir.create(day_path)
+	}
+	
+	# get and save the input
 	req <- httr::GET(url,
 		httr::set_cookies(session = session),
-		httr::write_disk(path, overwrite = TRUE))
+		httr::write_disk(input_path, overwrite = TRUE))
 }
 
 # copy post-template to create a new post for a given day and year
 aoc_new_post <- function(day, year = NULL) {
 	if (is.null(year)) year <- current_year()
 	
-	# if year directory doesn't exist, create it
-	if (!dir.exists(here::here(year))) {
-		dir.create(here::here(year))
+	year_path <- here::here(year)
+	day_path <- paste0(year_path, "/", "day", day)
+	
+	# if year doesn't exist, create it
+	if (!dir.exists(year_path)) {
+		dir.create(year_path)
 	}
 	
-	from_post <- here::here("post-template")
-	to_post <- here::here(year, paste0("day", day))
+	# if day doesn't exist, create it
+	if (!dir.exists(day_path)) {
+		dir.create(day_path)
+	}
 	
-	dir.create(to_post)
-	file.copy(list.files(from_post, full.names = TRUE),
-						to_post,
+	template_path <- here::here("post-template")
+
+	file.copy(list.files(template_path, full.names = TRUE),
+						day_path,
 						recursive = TRUE)
 	
 	# get index.qmd from the new post
@@ -79,7 +96,7 @@ aoc_new_post <- function(day, year = NULL) {
 aoc_delete_post <- function(day, year = NULL) {
 	if (is.null(year)) year <- current_year()
 	
-	post <- here::here(year, paste0("day", day))
+	post <- here::here(year, paste0("day", day, "/index.qmd"))
 	unlink(post, recursive = TRUE)
 }
 
@@ -87,8 +104,16 @@ aoc_delete_post <- function(day, year = NULL) {
 aoc_delete_input <- function(day, year = NULL) {
 	if (is.null(year)) year <- current_year()
 	
-	input <- here::here("input", year, paste0("day", day, ".txt"))
+	input <- here::here(year, paste0("day", day, "/input.txt"))
 	unlink(input)
+}
+
+# delete post and input for a given day and year
+aoc_delete_day <- function(day, year = NULL) {
+	if (is.null(year)) year <- current_year()
+	
+	day <- here::here(year, paste0("day", day))
+	unlink(day, recursive = TRUE)
 }
 
 # aoc_new_day function gets input and creates a new post
@@ -99,28 +124,14 @@ aoc_new_day <- function(day, year = NULL) {
 	aoc_new_post(day, year)
 }
 
-# aoc_delete_day function deletes input and post
-aoc_delete_day <- function(day, year = NULL) {
-	if (is.null(year)) year <- current_year()
-	
-	aoc_delete_input(day, year)
-	aoc_delete_post(day, year)
-}
-
 # aoc_new_year copies the listing template _YYYY.qmd
 # and creates new directories for the posts and input
 aoc_new_year <- function(year = NULL) {
 	if (is.null(year)) year <- current_year()
 	
-	# create new directory for the posts, if it doesn't exist
+	# create new year directory if it doesn't exist
 	if (!dir.exists(here::here(year))) {
 		dir.create(here::here(year))
-	}
-	
-	# create new directory for the input, if it doesn't exist
-	input_path <- here::here("input", year)
-	if (!dir.exists(input_path)) {
-		dir.create(input_path)
 	}
 	
 	# copy the _YYYY.qmd to year.qmd
@@ -132,3 +143,12 @@ aoc_new_year <- function(year = NULL) {
 	writeLines(year_qmd_with_year, here::here(paste0(year, ".qmd")))
 
 }
+
+aoc_delete_year <- function(year = NULL) {
+	if (is.null(year)) year <- current_year()
+	
+	year <- here::here(year)
+	unlink(year, recursive = TRUE)
+	unlink(paste0(year, ".qmd"))
+}
+
