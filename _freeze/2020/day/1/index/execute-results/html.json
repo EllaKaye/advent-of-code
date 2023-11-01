@@ -1,0 +1,15 @@
+{
+  "hash": "6326e6ab1038aac25e090428e09907ea",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: Day 1\ndate: 2020-12-1\nauthor: \n  - name: Ella Kaye\ncategories:\n  - tidyverse\nopen-graph: true\ndraft: false\n---\n\n\n## Setup\n\n[The original challenge](https://adventofcode.com/2020/day/1)\n\n[My data](input)\n\n## Part 1\n\nThe challenge is to find two numbers from a list that sum to 2020, then to report their product.\n\n`expand.grid()` creates a data frame from all combinations of the supplied vectors. Since the vectors are the same, each pair is duplicated. In this case the two numbers in the list that sum to 2020 are 704 and 1316, and we have one row with 704 as Var1 and one with 704 as Var2. `slice(1)` takes the first occurrence of the pair.\n\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(dplyr)\n\nexpenses <- \n  readLines(here::here(\"2020\", \"day\", \"1\", \"input\")) %>%\n  as.numeric()\n\nexpand.grid(expenses, expenses) %>% \n  mutate(sum = Var1 + Var2) %>%\n  filter(sum == 2020) %>%\n  mutate(prod = Var1 * Var2) %>%\n  slice(1) %>%\n  pull(prod)\n```\n\n::: {.cell-output .cell-output-stdout}\n\n```\n[1] 926464\n```\n\n\n:::\n:::\n\n\n## Part 2\n\nThe follow-up challenge is the same but with three numbers. I went with essentially the same code but it's notably slower. There are a lot of repeated calculations here: each triplet appears six times in the table.\n\n\n::: {.cell}\n\n```{.r .cell-code}\nexpand.grid(expenses, expenses, expenses) %>% \n  mutate(sum = Var1 + Var2 + Var3) %>%\n  filter(sum == 2020) %>%\n  mutate(prod = Var1 * Var2 * Var3) %>%\n  slice(1) %>%\n  pull(prod)\n```\n\n::: {.cell-output .cell-output-stdout}\n\n```\n[1] 65656536\n```\n\n\n:::\n:::\n\n\n\n##### Session info {.appendix}\n\n<details><summary>Toggle</summary>\n\n\n::: {.cell}\n::: {.cell-output .cell-output-stdout}\n\n```\n─ Session info ───────────────────────────────────────────────────────────────\n setting  value\n version  R version 4.3.1 (2023-06-16)\n os       macOS Sonoma 14.0\n system   aarch64, darwin20\n ui       X11\n language (EN)\n collate  en_US.UTF-8\n ctype    en_US.UTF-8\n tz       Europe/London\n date     2023-11-01\n pandoc   3.1.1 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/ (via rmarkdown)\n quarto   1.4.466 @ /usr/local/bin/quarto\n\n─ Packages ───────────────────────────────────────────────────────────────────\n package     * version date (UTC) lib source\n dplyr       * 1.1.2   2023-04-20 [1] CRAN (R 4.3.0)\n sessioninfo * 1.2.2   2021-12-06 [1] CRAN (R 4.3.0)\n\n [1] /Users/ellakaye/Library/R/arm64/4.3/library\n [2] /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library\n\n──────────────────────────────────────────────────────────────────────────────\n```\n\n\n:::\n:::\n\n\n</details>\n\n\n\n\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

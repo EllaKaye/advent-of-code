@@ -14,13 +14,14 @@ draft: false
 
 [The original challenge](https://adventofcode.com/YYYY/day/DD)
 
-[My data](../../input/YYYY/dayDD.txt)
+[My data](input)
 
 ## Part 1
 
 ```{r}
 #| eval: false
-input <- readLines(here::here("input", "YYYY", "dayDD.txt"))
+input <- readLines(here::here("YYYY", "day", "DD", "input"),
+                   warn = FALSE)
 ```
 
 ## Part 2

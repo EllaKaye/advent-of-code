@@ -1,0 +1,116 @@
+---
+title: Day 5
+date: 2020-12-5
+author: 
+  - name: Ella Kaye
+categories:
+  - tidyverse
+  - binary
+  - base R
+open-graph: true
+draft: false
+---
+
+## Setup
+
+[The original challenge](https://adventofcode.com/2020/day/5)
+
+[My data](input)
+
+## Part 1
+
+
+```{r message = FALSE}
+library(tidyverse)
+```
+
+The code below sets starts by setting each row number to 127 and each column number to 7, the maximum they can be, then, working along the string, lowering the maximum (or leaving it as is) one letter at a time:
+
+```{r, message = FALSE}
+boarding <- 
+  read_tsv(here::here("2020", "day", "5", "input"),
+           col_names = FALSE) %>%
+  rename(binary = X1)
+
+seat_IDs <- boarding %>%
+  mutate(row = 127) %>%
+  mutate(col = 7) %>%
+  mutate(row = if_else(str_sub(binary, 1, 1) == "F", row - 64, row)) %>%
+  mutate(row = if_else(str_sub(binary, 2, 2) == "F", row - 32, row)) %>%
+  mutate(row = if_else(str_sub(binary, 3, 3) == "F", row - 16, row)) %>%
+  mutate(row = if_else(str_sub(binary, 4, 4) == "F", row - 8, row)) %>%
+  mutate(row = if_else(str_sub(binary, 5, 5) == "F", row - 4, row)) %>%
+  mutate(row = if_else(str_sub(binary, 6, 6) == "F", row - 2, row)) %>%
+  mutate(row = if_else(str_sub(binary, 7, 7) == "F", row - 1, row)) %>%
+  mutate(col = if_else(str_sub(binary, 8, 8) == "L", col - 4, col)) %>%
+  mutate(col = if_else(str_sub(binary, 9, 9) == "L", col - 2, col)) %>%  
+  mutate(col = if_else(str_sub(binary, 10, 10) == "L", col - 1, col)) %>%  
+  mutate(ID = row * 8 + col) 
+
+seat_IDs %>%
+  summarise(max = max(ID)) %>%
+  pull(max)
+```
+
+OK, I know I said in the introduction to this post that I would go with the first solution I think of that gets the right answer, and the above does work, but I'm *deeply* unhappy with the code. There's too much repetition, I don't like the use of subtraction when diving by 2 feels more appropriate in a binary context, and it doesn't feel like I've taken full advantage of the mathematical structure of the problem. So, on further reflection, I realise that the way that ID is defined is essentially turning a binary number into a decimal, where we get the binary number as a string by replacing "B" and "R" by "1" and L" and "F" by "0". Then, I just found, there is a base R function `strtoi()` that takes a string of digits in a given base and converts it to a base 10 integer, just what we need:
+
+```{r}
+seat_IDs <- boarding %>%
+  mutate(binary = str_replace_all(binary, "L|F", "0")) %>%
+  mutate(binary = str_replace_all(binary, "B|R", "1")) %>%
+  mutate(ID = strtoi(binary, base = 2)) %>%
+  arrange(desc(ID))
+
+seat_IDs %>%
+  slice(1) %>%
+  pull(ID)
+```
+
+That's better!
+
+## Part 2
+
+We need to find the missing number, so we arrange the IDs in ascending order and look at the gap between each ID and the preceding one. In most cases, that should be one. Where we have a gap of 2, we must have skipped the integer below:
+
+```{r}
+seat_IDs %>%
+  arrange(ID) %>%
+  mutate(diff = lag(ID)) %>%
+  mutate(gap = ID - diff) %>% 
+  filter(gap == 2) %>%
+  summarise(my_seat = ID - 1) %>%
+  pull(my_seat)
+```
+
+
+
+##### Session info {.appendix}
+
+<details><summary>Toggle</summary>
+
+```{r}
+#| echo: false
+library(sessioninfo)
+# save the session info as an object
+pkg_session <- session_info(pkgs = "attached")
+
+# get the quarto version
+quarto_version <- system("quarto --version", intern = TRUE)
+
+# inject the quarto info
+pkg_session$platform$quarto <- paste(
+  system("quarto --version", intern = TRUE), 
+  "@", 
+  quarto::quarto_path()
+  )
+
+# print it out
+pkg_session
+```
+
+</details>
+
+
+
+
+

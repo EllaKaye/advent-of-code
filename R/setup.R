@@ -35,8 +35,8 @@ aoc_get_input <- function(day, year = NULL) {
 	url <- aoc_input_url(day, year)
 	
 	year_path <- here::here(year)
-	day_path <- paste0(year_path, "/", "day", day)
-	input_path <- paste0(day_path, "/input.txt")
+	day_path <- paste0(year_path, "/day/", day)
+	input_path <- paste0(day_path, "/input")
 	
 	# check if there's a directory for the year and create one if not
 	if (!dir.exists(year_path)) {
@@ -59,7 +59,7 @@ aoc_new_post <- function(day, year = NULL) {
 	if (is.null(year)) year <- current_year()
 	
 	year_path <- here::here(year)
-	day_path <- paste0(year_path, "/", "day", day)
+	day_path <- paste0(year_path, "/day/", day)
 	
 	# if year doesn't exist, create it
 	if (!dir.exists(year_path)) {
@@ -78,7 +78,7 @@ aoc_new_post <- function(day, year = NULL) {
 						recursive = TRUE)
 	
 	# get index.qmd from the new post
-	index <- readLines(paste0(to_post, "/index.qmd"))
+	index <- readLines(paste0(day_path, "/index.qmd"))
 	
 	# replace YYYY and DD placeholders
 	index_with_year <- gsub("YYYY", year, index)
@@ -88,7 +88,7 @@ aoc_new_post <- function(day, year = NULL) {
 	index_with_input <- gsub("eval: false", "eval: true", index_with_day)
 	
 	# write the updated post
-	writeLines(index_with_input, paste0(to_post, "/index.qmd"))
+	writeLines(index_with_input, paste0(day_path, "/index.qmd"))
 	
 }
 
@@ -96,7 +96,7 @@ aoc_new_post <- function(day, year = NULL) {
 aoc_delete_post <- function(day, year = NULL) {
 	if (is.null(year)) year <- current_year()
 	
-	post <- here::here(year, paste0("day", day, "/index.qmd"))
+	post <- here::here(year, paste0("day/", day, "/index.qmd"))
 	unlink(post, recursive = TRUE)
 }
 
@@ -104,7 +104,7 @@ aoc_delete_post <- function(day, year = NULL) {
 aoc_delete_input <- function(day, year = NULL) {
 	if (is.null(year)) year <- current_year()
 	
-	input <- here::here(year, paste0("day", day, "/input.txt"))
+	input <- here::here(year, paste0("day/", day, "/input"))
 	unlink(input)
 }
 
@@ -112,7 +112,7 @@ aoc_delete_input <- function(day, year = NULL) {
 aoc_delete_day <- function(day, year = NULL) {
 	if (is.null(year)) year <- current_year()
 	
-	day <- here::here(year, paste0("day", day))
+	day <- here::here(year, paste0("day/", day))
 	unlink(day, recursive = TRUE)
 }
 
