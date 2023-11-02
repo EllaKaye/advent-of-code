@@ -45,7 +45,7 @@ aoc_get_input <- function(day, year = NULL) {
 	
 	# check if there's a directory for the day and create one if not
 	if (!dir.exists(day_path)) {
-		dir.create(day_path)
+		dir.create(day_path, recursive = TRUE)
 	}
 	
 	# get and save the input
@@ -68,7 +68,7 @@ aoc_new_post <- function(day, year = NULL) {
 	
 	# if day doesn't exist, create it
 	if (!dir.exists(day_path)) {
-		dir.create(day_path)
+		dir.create(day_path, recursive = TRUE)
 	}
 	
 	template_path <- here::here("post-template")
@@ -120,6 +120,8 @@ aoc_delete_day <- function(day, year = NULL) {
 aoc_new_day <- function(day, year = NULL) {
 	if (is.null(year)) year <- current_year()
 	
+	
+	
 	aoc_get_input(day, year)
 	aoc_new_post(day, year)
 }
@@ -142,6 +144,8 @@ aoc_new_year <- function(year = NULL) {
 	year_qmd_with_year <- gsub("YYYY", year, year_qmd)
 	writeLines(year_qmd_with_year, here::here(paste0(year, ".qmd")))
 
+	# message reminder to update _quarto.yml
+	message("Don't forget to update _quarto.yml, to list the new year in the navbar.")
 }
 
 aoc_delete_year <- function(year = NULL) {

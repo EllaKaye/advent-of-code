@@ -1,7 +1,7 @@
 ---
 title: "YYYY"
 listing:
-  contents: "YYYY"
+  contents: "YYYY/day"
   sort: "date"
   type: table
   categories: true

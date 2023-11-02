@@ -14,7 +14,7 @@ draft: false
 
 [The original challenge](https://adventofcode.com/2020/day/10)
 
-[My data](input)
+[My data](input){target="_blank"}
 
 ## Part 1
 
