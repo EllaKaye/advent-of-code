@@ -11,7 +11,6 @@ website:
   description: Ella Kaye's solutions to Advent of Code
   repo-url: https://github.com/EllaKaye/advent-of-code
   navbar:
-    #title: "ADVENT<span class='icon-line'></span>OF CODE"
     left:
       - 2020.qmd    
     right:
