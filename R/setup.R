@@ -145,7 +145,9 @@ aoc_new_year <- function(year = NULL) {
 	writeLines(year_qmd_with_year, here::here(paste0(year, ".qmd")))
 
 	# message reminder to update _quarto.yml
-	message("Don't forget to update _quarto.yml, to list the new year in the navbar.")
+	cli::cli_bullets(c(
+		"!" = "Don't forget to update _quarto.yml, to list {year}.qmd in the navbar.",
+		"!" = "May need to change the color of the header in {year}.qmd to match its navbar link color."))
 }
 
 aoc_delete_year <- function(year = NULL) {
