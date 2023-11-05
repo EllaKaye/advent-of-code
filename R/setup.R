@@ -156,5 +156,6 @@ aoc_delete_year <- function(year = NULL) {
 	year <- here::here(year)
 	unlink(year, recursive = TRUE)
 	unlink(paste0(year, ".qmd"))
+	unlink(here::here("_freeze", year), recursive = TRUE)
 }
 
