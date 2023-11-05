@@ -7,7 +7,7 @@ project:
     
 website:
   title: "Advent of Code"
-  #site-url: https://adventofcode.ellakaye.co.uk
+  site-url: https://adventofcode.ellakaye.co.uk
   description: Ella Kaye's solutions to Advent of Code
   repo-url: https://github.com/EllaKaye/advent-of-code
   navbar:
