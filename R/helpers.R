@@ -26,7 +26,8 @@ aoc_input_vector <- function(day, year = NULL, mode = c("character", "numeric"))
 }
 
 aoc_input_data_frame <- function(day, year = NULL, class = c("tbl_df", "data.frame"), 
-																 col_names = FALSE, show_col_types = FALSE) {
+																 col_names = FALSE, show_col_types = FALSE,
+																 view = FALSE) {
 	if (is.null(year)) year <- current_year()
 	
 	path <- aoc_input_path(day, year)
@@ -37,9 +38,14 @@ aoc_input_data_frame <- function(day, year = NULL, class = c("tbl_df", "data.fra
 	} else if (class == "data.frame") {
 		input <- read.table(path)
 	}
+	
+	if (view) {View(input)}
+	
+	input
 }
 
-aoc_input_matrix <- function(day, year = NULL, mode = c("character", "numeric")) {
+aoc_input_matrix <- function(day, year = NULL, mode = c("character", "numeric"),
+														 view = FALSE) {
 	if (is.null(year)) year <- current_year()
 	
 	mode <- rlang::arg_match(mode)
@@ -53,6 +59,8 @@ aoc_input_matrix <- function(day, year = NULL, mode = c("character", "numeric"))
 	if (mode == "numeric") {
 		input <- apply(input, 2, as.double)
 	}
+	
+	if (view) {View(input)}
 	
 	input
 }
