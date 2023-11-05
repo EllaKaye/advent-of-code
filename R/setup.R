@@ -120,8 +120,6 @@ aoc_delete_day <- function(day, year = NULL) {
 aoc_new_day <- function(day, year = NULL) {
 	if (is.null(year)) year <- current_year()
 	
-	
-	
 	aoc_get_input(day, year)
 	aoc_new_post(day, year)
 }
