@@ -1,0 +1,4 @@
+- source: project
+  netlify:
+    - id: c7ffe241-eb53-4f9c-b8cd-e26032a52f7f
+      url: 'https://aesthetic-alfajores-25c9c6.netlify.app'
