@@ -1,5 +1,5 @@
 ---
-title: Day 7
+title: "2020: Day 7"
 date: 2020-12-7
 author: 
   - name: Ella Kaye
