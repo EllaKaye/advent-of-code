@@ -1,4 +1,5 @@
 ---
+title: "2020"
 listing:
   contents: "2020/day"
   sort: "date"
@@ -9,7 +10,18 @@ listing:
   fields: [date, title, categories]
 code-tools: false
 toc: false
+knitr:
+  opts_chunk: 
+    collapse: true
+execute:
+  echo: false
 ---
+
+```{css}
+h1.title {
+  display: none;
+}
+```
 
 # [2020]{.primary}
 

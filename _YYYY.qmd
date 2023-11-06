@@ -1,4 +1,5 @@
 ---
+title: "YYYY"
 listing:
   contents: "YYYY/day"
   sort: "date"
@@ -9,6 +10,17 @@ listing:
   fields: [date, title, categories]
 code-tools: false
 toc: false
+knitr:
+  opts_chunk: 
+    collapse: true
+execute:
+  echo: false
 ---
+
+```{css}
+h1.title {
+  display: none;
+}
+```
 
 # [YYYY]{.primary}
