@@ -90,6 +90,14 @@ aoc_new_post <- function(day, year = NULL) {
 	# write the updated post
 	writeLines(index_with_input, paste0(day_path, "/index.qmd"))
 	
+	# if there's a script.R, read it in and substitute the year and day
+	if (file.exists(paste0(day_path, "/script.R"))) {
+		script <- readLines(paste0(day_path, "/script.R"))
+		script_with_year <- gsub("YYYY", year, script)
+		script_with_day <- gsub("DD", day, script_with_year)
+		writeLines(script_with_day, paste0(day_path, "/script.R"))
+	}
+	
 }
 
 # delete a post for a given day and year
