@@ -1,5 +1,5 @@
 ---
-title: Day DD
+title: "YYYY: Day DD"
 date: YYYY-12-DD
 author: 
   - name: Ella Kaye

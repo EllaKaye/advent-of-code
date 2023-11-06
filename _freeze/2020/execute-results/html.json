@@ -1,8 +1,8 @@
 {
-  "hash": "b7d12a008a169df76d4ebf0b2fa2957a",
+  "hash": "4334212d952dd0509ca0bd5d7c24e3be",
   "result": {
     "engine": "knitr",
-    "markdown": "---\ntitle: \"2020\"\nlisting:\n  contents: \"2020/day\"\n  sort: \"date\"\n  type: table\n  categories: true\n  sort-ui: false\n  filter-ui: false\n  fields: [date, title, categories]\ncode-tools: false\ntoc: false\nknitr:\n  opts_chunk: \n    collapse: true\nexecute:\n  echo: false\n---\n\n::: {.cell}\n<style type=\"text/css\">\nh1.title {\n  display: none;\n}\n</style>\n:::\n\n\n# [2020]{.primary}\n\n\n",
+    "markdown": "---\ntitle: \"2020\"\nlisting:\n  contents: \"2020/day\"\n  sort: \"date\"\n  type: table\n  categories: true\n  sort-ui: false\n  filter-ui: false\n  fields: [title, categories]\ncode-tools: false\ntoc: false\nknitr:\n  opts_chunk: \n    collapse: true\nexecute:\n  echo: false\n---\n\n::: {.cell}\n<style type=\"text/css\">\nh1.title {\n  display: none;\n}\n</style>\n:::\n\n\n# [2020]{.primary}\n\n\n",
     "supporting": [
       "2020_files"
     ],
