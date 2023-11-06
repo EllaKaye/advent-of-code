@@ -1,0 +1,99 @@
+---
+title: Day 6
+date: 2020-12-6
+author: 
+  - name: Ella Kaye
+categories:
+  - tidyverse
+open-graph: true
+draft: false
+---
+
+## Setup
+
+[The original challenge](https://adventofcode.com/2020/day/6)
+
+[My data](input){target="_blank"}
+
+## Part 1
+
+```{r message = FALSE}
+library(dplyr)
+library(tidyr)
+library(stringr)
+```
+
+Within each group, we need to find the number of unique letters within each group. We read in and separate the data using the tricks learnt for [Day 4](../4/index.qmd), and take advantage of the `rowwise()` feature in `dplyr 1.0.0`. 
+
+```{r message = FALSE}
+customs_groups <- 
+  readLines(here::here("2020", "day", "6", "input")) %>%
+  as_tibble() %>%
+  mutate(new_group = value == "") %>%
+  mutate(group_ID = cumsum(new_group) + 1) %>%
+  filter(!new_group) %>%
+  select(-new_group) %>%
+  group_by(group_ID) 
+
+customs_groups %>%
+  summarise(qs = str_c(value, collapse = "")) %>%
+  ungroup() %>%
+  mutate(qss = str_split(qs, "")) %>%
+  rowwise() %>%
+  mutate(qsu = list(unique(qss))) %>%
+  mutate(count = length(qsu)) %>%
+  ungroup() %>%
+  summarise(total = sum(count)) %>%
+  pull(total)
+```
+
+## Part 2
+
+Now, instead of unique letters in a group, we need to find the number of letters which appear in all the answers for everyone in the same group. I first note how many people are in each group, then tabulate the number of occurrences of each letter in the group, then count (by summing a logical vector) the number of matches between occurrences of letter and the number in group. Finally, we sum across all groups.
+
+```{r message = FALSE}
+customs_groups %>%  
+  add_count(group_ID, name = "num_in_group") %>%
+  group_by(group_ID, num_in_group) %>%
+  summarise(qs = str_c(value, collapse = "")) %>%
+  ungroup() %>%
+  mutate(qss = str_split(qs, "")) %>%
+  rowwise() %>%
+  mutate(letter_table = list(table(qss))) %>%
+  slice(1) %>%
+  mutate(in_common = sum(num_in_group == letter_table)) %>%
+  ungroup() %>%
+  summarise(total = sum(in_common)) %>%
+  pull(total)
+```
+
+##### Session info {.appendix}
+
+<details><summary>Toggle</summary>
+
+```{r}
+#| echo: false
+library(sessioninfo)
+# save the session info as an object
+pkg_session <- session_info(pkgs = "attached")
+
+# get the quarto version
+quarto_version <- system("quarto --version", intern = TRUE)
+
+# inject the quarto info
+pkg_session$platform$quarto <- paste(
+  system("quarto --version", intern = TRUE), 
+  "@", 
+  quarto::quarto_path()
+  )
+
+# print it out
+pkg_session
+```
+
+</details>
+
+
+
+
+

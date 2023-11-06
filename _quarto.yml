@@ -7,13 +7,13 @@ project:
     
 website:
   title: "Advent of Code"
-  #site-url: https://adventofcode.ellakaye.co.uk
+  site-url: https://adventofcode.ellakaye.co.uk
   description: Ella Kaye's solutions to Advent of Code
   repo-url: https://github.com/EllaKaye/advent-of-code
   navbar:
-    #title: "ADVENT<span class='icon-line'></span>OF CODE"
     left:
-      - 2020.qmd    
+      - text: "2020"
+        href: 2020.qmd
     right:
       - icon: github
         href: https://github.com/EllaKaye/advent-of-code

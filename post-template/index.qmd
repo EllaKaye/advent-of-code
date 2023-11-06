@@ -6,7 +6,6 @@ author:
 categories:
   - TAG_1
   - TAG_2
-open-graph: true
 draft: false
 ---
 
@@ -14,13 +13,16 @@ draft: false
 
 [The original challenge](https://adventofcode.com/YYYY/day/DD)
 
-[My data](../../input/YYYY/dayDD.txt)
+[My data](input){target="_blank"}
 
 ## Part 1
 
 ```{r}
 #| eval: false
-input <- readLines(here::here("input", "YYYY", "dayDD.txt"))
+source(here::here("R", "helpers.R"))
+# other options: aoc_input_data_frame(), aoc_input_matrix()
+input <- aoc_input_vector("DD", "YYYY")
+head(input)
 ```
 
 ## Part 2
