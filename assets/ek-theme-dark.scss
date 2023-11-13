@@ -156,6 +156,11 @@ code span.co {
   font-family: "MonoLisa-RegularItalic", "Fira Mono", monospace;
 }
 
+pre code {
+	background-color: $code-bg;
+	color: $light !important;
+}
+
 h1 code {
   font-size: $h1-font-size;
 }
