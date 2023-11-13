@@ -1,14 +1,20 @@
 ---
 title: "Advent of Code"
-description: "Ella Kaye's solutions and notes."
-code-tools: false
+subtitle: "Ella Kaye's solutions and notes."
+#description: "Ella Kaye's solutions and notes for Advent of Code."
 ---
 
 [Advent of Code](https://adventofcode.com) is a series of increasingly difficult programming challenges, 
 released daily each year throughout December in the run-up to Christmas.
 
-This website is created from the [EllaKaye/advent-of-code](https://github.com/EllaKaye/advent-of-code) repository.
-I use it to keep a record of my solutions and make notes about what I learn along the way. It is built with [Quarto](https://quarto.org) and supported by [R functions](https://github.com/EllaKaye/advent-of-code/blob/main/R/setup.R) to ease the process of downloading the data and creating the posts.
+This website is created from the 
+[EllaKaye/advent-of-code](https://github.com/EllaKaye/advent-of-code) repository.
+I use it to keep a record of my solutions and make notes about what I learn along the way. 
+It is built with [Quarto](https://quarto.org) and supported by my [**aochelpers**](https://github.com/EllaKaye/aochelpers) package. 
+**aochelpers** provides functions to create the posts and listings pages, 
+to download and read in the puzzle inputs, 
+and other functions that are useful in	solving the puzzles 
+(with more to be added as I work through the challenges).
 
 The idea for this site came from seeing [Emil Hvitfeldt's version](https://emilhvitfeldt.github.io/rstats-adventofcode/) and also adapts and builds upon code from David Robinson's [adventdrob](https://github.com/dgrtwo/adventdrob) package.
 

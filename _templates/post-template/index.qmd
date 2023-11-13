@@ -18,12 +18,20 @@ draft: false
 ## Part 1
 
 ```{r}
-#| eval: false
-source(here::here("R", "helpers.R"))
+#| echo: false
+OK <- "YYYY" < 3000
+# Will only evaluate next code block if an actual year has been substituted for the placeholder
+```
+
+
+```{r}
+#| eval: !expr OK
+library(aochelpers)
 # other options: aoc_input_data_frame(), aoc_input_matrix()
-input <- aoc_input_vector("DD", "YYYY")
+input <- aoc_input_vector(DD, YYYY)
 head(input)
 ```
+
 
 ## Part 2
 

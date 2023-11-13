@@ -8,8 +8,6 @@ listing:
   sort-ui: false
   filter-ui: false
   fields: [title, categories]
-code-tools: false
-toc: false
 knitr:
   opts_chunk: 
     collapse: true

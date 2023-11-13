@@ -1,4 +1,4 @@
-source(here::here("R", "helpers.R"))
+library(aochelpers)
 # input <- aoc_input_vector(DD, YYYY) # uncomment at end, once correct on test input
 # also consider aoc_input_data_frame() or aoc_input_matrix(), with view = TRUE
 
