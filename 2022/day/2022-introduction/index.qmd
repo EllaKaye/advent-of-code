@@ -1,0 +1,15 @@
+---
+title: "2022: Introduction"
+date: 2022-11-30
+author: Ella Kaye
+code-tools: false
+---
+
+It's mid-November 2023 and I'm gearing up for this year's Advent of Code.
+I've put together this website, a [template](https://github.com/EllaKaye/advent-of-code-website-template) 
+based on it and an associate package, [**aochelpers**](https://github.com/EllaKaye/aochelpers). 
+As I wait for new challenges to be released, I'm going back to the 2022 puzzles, 
+which I didn't do at the time, to test out the site and package and to sharpen my coding skills.^[I'm dating the posts with the day they were released, to keep the listing neat, and consequently have to date this post before then to keep it at the top of the list.] I'll once again be coding in R, but this time I want to use Advent of Code as an opportunity to learn more about the functions in base R. 
+I will use the `aoc_input_*` functions from **aochelpers** to read in the puzzle inputs, though.
+
+When I write up my solutions, I'll make notes about what I've learned about the functions I've used -- I won't necessarily explain the whole solution.

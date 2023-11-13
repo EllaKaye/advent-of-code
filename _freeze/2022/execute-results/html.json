@@ -1,0 +1,17 @@
+{
+  "hash": "730aeb0930759da66062491a745c776f",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"2022\"\nlisting:\n  contents: \"2022/day\"\n  sort: \"date\"\n  type: table\n  categories: true\n  sort-ui: false\n  filter-ui: false\n  fields: [title, categories]\nknitr:\n  opts_chunk: \n    collapse: true\nexecute:\n  echo: false\n---\n\n::: {.cell}\n<style type=\"text/css\">\nh1.title {\n  display: none;\n}\n</style>\n:::\n\n\n# [2022]{.second-color}\n",
+    "supporting": [
+      "2022_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

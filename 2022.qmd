@@ -1,0 +1,24 @@
+---
+title: "2022"
+listing:
+  contents: "2022/day"
+  sort: "date"
+  type: table
+  categories: true
+  sort-ui: false
+  filter-ui: false
+  fields: [title, categories]
+knitr:
+  opts_chunk: 
+    collapse: true
+execute:
+  echo: false
+---
+
+```{css}
+h1.title {
+  display: none;
+}
+```
+
+# [2022]{.second-color}
