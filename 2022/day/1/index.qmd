@@ -28,6 +28,7 @@ OK <- "2022" < 3000
 #| eval: !expr OK
 library(aochelpers)
 input <- aoc_input_vector(1, 2022, "numeric")
+head(input, 10)
 ```
 
 In this challenge, we're given groups of numbers and we need to find the sum of each group. 
@@ -48,8 +49,8 @@ max(totals)
 This is similar, except we want to find the sum of the sums of the top three groups.
 
 ```{r}
-sort(totals, decreasing = TRUE) |> 
-  head(3) |> 
+sort(totals) |> 
+  tail(3) |> 
   sum()
 ```
 

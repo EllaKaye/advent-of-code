@@ -1,0 +1,110 @@
+---
+title: "2022: Day 2"
+date: 2022-12-2
+author: 
+  - name: Ella Kaye
+categories: [base R, strings]
+draft: false
+---
+
+## Setup
+
+[The original challenge](https://adventofcode.com/2022/day/2)
+
+[My data](input){target="_blank"}
+
+## Part 1
+
+```{r}
+#| echo: false
+OK <- "2022" < 3000
+# Will only evaluate next code block if an actual year has been substituted for the placeholder
+```
+
+
+```{r}
+#| eval: !expr OK
+library(aochelpers)
+input <- aoc_input_vector(2, 2022)
+head(input)
+```
+
+The strategy here is to write a function that calculates the score for each individual round, 
+then use `sapply()` to apply it to each round in the input, and finally sum the results.
+The [script](script.R) has a few more details.
+
+```{r}
+my_score <- function(round) {
+    
+    draw <- c("A X", "B Y", "C Z")
+    win <- c("A Y", "B Z", "C X")
+    lose <- c("A Z", "B X", "C Y")
+    
+    my_shape <- strsplit(round, " ")[[1]][2]
+    shape_score <- switch(my_shape, "X" = 1, "Y" = 2, "Z" = 3)
+    
+    if (round %in% draw) outcome_score <- 3
+    else if (round %in% win) outcome_score <- 6
+    else outcome_score <- 0
+    
+    shape_score + outcome_score
+}
+
+sapply(input, my_score) |> sum()
+```
+
+## Part 2
+
+Very similar for part 2, expect that the interpretation of the rules is different,
+so we need to modify the function for caluclating the score.
+
+```{r}
+my_new_score <- function(round) {
+    
+    pick_scissors <- c("A X", "B Z", "C Y")
+    pick_rock <- c("A Y", "B X", "C Z")
+    pick_paper <- c("A Z", "B Y", "C X")
+    
+    outcome <- strsplit(round, " ")[[1]][2]
+    outcome_score <- switch(outcome, "X" = 0, "Y" = 3, "Z" = 6)
+    
+    if (round %in% pick_rock) shape_score <- 1
+    else if (round %in% pick_paper) shape_score <- 2
+    else shape_score <- 3
+    
+    shape_score + outcome_score
+}
+
+sapply(input, my_new_score) |> sum()
+```
+
+
+##### Session info {.appendix}
+
+<details><summary>Toggle</summary>
+
+```{r}
+#| echo: false
+library(sessioninfo)
+# save the session info as an object
+pkg_session <- session_info(pkgs = "attached")
+
+# get the quarto version
+quarto_version <- system("quarto --version", intern = TRUE)
+
+# inject the quarto info
+pkg_session$platform$quarto <- paste(
+  system("quarto --version", intern = TRUE), 
+  "@", 
+  quarto::quarto_path()
+  )
+
+# print it out
+pkg_session
+```
+
+</details>
+
+
+
+

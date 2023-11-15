@@ -1,0 +1,97 @@
+---
+title: "2022: Day 3"
+date: 2022-12-3
+author: 
+  - name: Ella Kaye
+categories: [base R, strings, functional programming]
+draft: false
+---
+
+## Setup
+
+[The original challenge](https://adventofcode.com/2022/day/3)
+
+[My data](input){target="_blank"}
+
+## Part 1
+
+```{r}
+#| echo: false
+OK <- "2022" < 3000
+# Will only evaluate next code block if an actual year has been substituted for the placeholder
+```
+
+
+```{r}
+#| eval: !expr OK
+library(aochelpers)
+input <- aoc_input_vector(3, 2022)
+head(input)
+```
+
+Similar to yesterday's strategy, we define a function to find the priority for the item in both compartments for one rucksack, then apply it to all rucksacks and find the sum. The new-to-me function today is `nchar()`, to find the number of characters in a string, which we can use with `head()` and `tail()` to split the string in half. I also learnt about `match()`,
+which returns the position of the first match of the first argument in the second argument.
+
+```{r}
+priority <- function(rucksack) {
+	n <- nchar(rucksack)
+	items <- unlist(strsplit(rucksack, ""))
+	item <- intersect(head(items, n/2), tail(items, n/2))
+	match(item, c(letters, LETTERS))
+}
+
+sapply(input, priority) |> sum()
+```
+
+
+## Part 2
+
+Another opportunity here to use `split()`, which I learnt about on Day 1,
+this time to split the input list into groups of three.
+
+```{r}
+groups <- split(input, rep(1:(length(input)/3), each = 3))
+```
+
+I then define a function to find the priority for the item shared by all three members of one group. `strsplit()` splits the group into a vector or individual items. `intersect()` only works on two vectors, so I use `Reduce()` to apply it to all three.
+
+```{r}
+priority_shared_item <- function(group) {
+	group_items <- strsplit(group, "") 
+	common_item <- Reduce(intersect, group_items)	
+	match(common_item, c(letters, LETTERS))
+}
+
+sapply(groups, priority_shared_item) |> sum()
+```
+
+##### Session info {.appendix}
+
+<details><summary>Toggle</summary>
+
+```{r}
+#| echo: false
+library(sessioninfo)
+# save the session info as an object
+pkg_session <- session_info(pkgs = "attached")
+
+# get the quarto version
+quarto_version <- system("quarto --version", intern = TRUE)
+
+# inject the quarto info
+pkg_session$platform$quarto <- paste(
+  system("quarto --version", intern = TRUE), 
+  "@", 
+  quarto::quarto_path()
+  )
+
+# print it out
+pkg_session
+```
+
+</details>
+
+
+
+
+
