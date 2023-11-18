@@ -1,0 +1,160 @@
+---
+title: "2022: Day 5"
+date: 2022-12-5
+author: 
+  - name: Ella Kaye
+categories: [base R, lists, strings]
+draft: false
+---
+
+## Setup
+
+[The original challenge](https://adventofcode.com/2022/day/5)
+
+[My data](input){target="_blank"}
+
+## Part 1
+
+```{r}
+#| echo: false
+OK <- "2022" < 3000
+# Will only evaluate next code block if an actual year has been substituted for the placeholder
+```
+
+```{r}
+#| eval: !expr OK
+library(aochelpers)
+input <- aoc_input_vector(5, 2022)
+```
+
+The [input](input) is in two sections. The first represents the stack of crates, 
+underneath which is a row of digits of crate numbers. 
+Then there's a blank line, followed by the instructions for moving the crates around.
+So, our first task is to separate the input into each part.
+
+```{r}
+blank <- which(input == "")
+stack_numbers_index <- blank - 1
+stack_numbers <- input[stack_numbers_index]
+stacks <- input[1:(stack_numbers_index-1)]
+instructions <- input[(blank+1):length(input)]
+```
+
+When I first saw the input, the most daunting part was thinking about how to extract the letters from the stacks. 
+The realisation that each row of `stacks` is a string of 35 characters^[`sapply(stacks, nchar) |> unname()`] made me realise that the stacks could be represented as a matrix, with each row as a vector of characters. We can then extract the letters by subsetting the matrix by column. The columns we need are the positions where the digits appear in `stack_numbers`.
+
+```{r}
+digits_split <- stack_numbers |> strsplit("") |> unlist() |> as.numeric() 
+stack_columns <- which(!is.na(digits_split))
+
+stacks_matrix <- matrix(unlist(strsplit(stacks, split = "")), 
+												nrow = length(stacks),
+												byrow = TRUE)
+stacks_matrix_letters <- stacks_matrix[,stack_columns]
+stacks_matrix_letters
+```
+In order to move the crates around, we need to be able to access the top of each stack.
+So, next we convert the matrix into a list, where the elements are each column as a vector, removing the spaces and reversing the order of the letters in each vector.^[We don't actually need to reverse the order, but it seems more intuitive to me to have it this way round.]
+
+```{r}
+stacks_list <- apply(stacks_matrix_letters, 2, function(x) rev(x[x != " "])) 
+```
+
+Next we need to deal with the instructions. 
+Here, we write a function that takes one instruction and returns a vector of the three integers in it. We then apply this to all the instructions.
+
+```{r}
+#| warnings: false
+get_values <- function(instruction) {
+	words <- strsplit(instruction, " ") |> unlist()
+	ints <- as.integer(words)
+	ints[!is.na(ints)] 
+}
+
+instruction_values <- lapply(instructions, get_values)
+```
+
+Now we can loop over the instructions, transferring the crates as required.
+
+```{r}
+for (i in seq_along(instruction_values)) {
+	
+	inst <- instruction_values[[i]]
+	
+	# crates to be transferred
+	transfer <- stacks_list[[inst[2]]] |> # from stack inst[2]
+		tail(inst[1]) |> # take inst[1] values
+		rev() # reverse the order
+	
+	# remove them from the 'from' stack
+	stacks_list[[inst[2]]] <- stacks_list[[inst[2]]] |> 
+		head(-inst[1]) # remove inst[1] values
+	
+	# add them to the `to` stack
+	stacks_list[[inst[3]]] <- c(stacks_list[[inst[3]]], transfer)
+}
+```
+
+After all the moving, get the crate at the top of each stack and paste them into a string.
+
+```{r}
+stacks_list |> sapply(tail, 1) |> paste(collapse = "")
+```
+
+## Part 2
+
+The only difference here is that the crates are transferred all at once. We go back to the starting configuration of crates and adapt the instructions to remove the call to `rev()`
+
+```{r}
+stacks_list <- apply(stacks_matrix_letters, 2, function(x) rev(x[x != " "])) 
+
+for (i in seq_along(instruction_values)) {
+	
+	inst <- instruction_values[[i]]
+	
+	# crates to be transferred
+	transfer <- stacks_list[[inst[2]]] |> # from stack inst[2]
+		tail(inst[1]) # take inst[1] values
+	
+	# remove them from the 'from' stack
+	stacks_list[[inst[2]]] <- stacks_list[[inst[2]]] |> 
+		head(-inst[1]) # remove inst[1] values
+	
+	# add them to the `to` stack
+	stacks_list[[inst[3]]] <- c(stacks_list[[inst[3]]], transfer)
+}
+
+stacks_list |> sapply(tail, 1) |> paste(collapse = "")
+```
+
+
+##### Session info {.appendix}
+
+<details><summary>Toggle</summary>
+
+```{r}
+#| echo: false
+library(sessioninfo)
+# save the session info as an object
+pkg_session <- session_info(pkgs = "attached")
+
+# get the quarto version
+quarto_version <- system("quarto --version", intern = TRUE)
+
+# inject the quarto info
+pkg_session$platform$quarto <- paste(
+  system("quarto --version", intern = TRUE), 
+  "@", 
+  quarto::quarto_path()
+  )
+
+# print it out
+pkg_session
+```
+
+</details>
+
+
+
+
+

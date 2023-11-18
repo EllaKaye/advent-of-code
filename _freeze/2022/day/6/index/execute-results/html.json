@@ -1,0 +1,15 @@
+{
+  "hash": "ff03b6b8cb0b333e4a4577d9b3e6aa0f",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"2022: Day 6\"\ndate: 2022-12-6\nauthor: \n  - name: Ella Kaye\ncategories: [base R, strings, loops]\ndraft: false\n---\n\n\n## Setup\n\n[The original challenge](https://adventofcode.com/2022/day/6)\n\n[My data](input){target=\"_blank\"}\n\n## Part 1\n\n\n::: {.cell}\n\n:::\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(aochelpers)\ninput <- aoc_input_vector(6, 2022)\n```\n:::\n\n::: {.cell}\n\n```{.r .cell-code}\ndata <- strsplit(input, \"\") |> unlist() \n\n\nfor (i in 4:length(data)) {\n\t\n\tlast_4 <- data[(i-3):i]\n\tlast_4_unique <- last_4 |> unique() |> length()\n\t\n\tif (last_4_unique == 4) {\n\t\tbreak\n\t}\n}\ni\n```\n\n::: {.cell-output .cell-output-stdout}\n\n```\n[1] 1080\n```\n\n\n:::\n:::\n\n\n\n## Part 2\n\n\n::: {.cell}\n\n```{.r .cell-code}\nfor (i in 14:length(data)) {\n\t\n\tlast_14 <- data[(i-13):i]\n\tlast_14_unique <- last_14 |> unique() |> length()\n\t\n\tif (last_14_unique == 14) {\n\t\tbreak\n\t}\n}\ni\n```\n\n::: {.cell-output .cell-output-stdout}\n\n```\n[1] 3645\n```\n\n\n:::\n:::\n\n\n\n##### Session info {.appendix}\n\n<details><summary>Toggle</summary>\n\n\n::: {.cell}\n::: {.cell-output .cell-output-stdout}\n\n```\n─ Session info ───────────────────────────────────────────────────────────────\n setting  value\n version  R version 4.3.1 (2023-06-16)\n os       macOS Sonoma 14.1\n system   aarch64, darwin20\n ui       X11\n language (EN)\n collate  en_US.UTF-8\n ctype    en_US.UTF-8\n tz       Europe/London\n date     2023-11-18\n pandoc   3.1.1 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/ (via rmarkdown)\n quarto   1.4.504 @ /usr/local/bin/quarto\n\n─ Packages ───────────────────────────────────────────────────────────────────\n package     * version    date (UTC) lib source\n aochelpers  * 0.0.0.9000 2023-11-17 [1] local\n sessioninfo * 1.2.2      2021-12-06 [1] CRAN (R 4.3.0)\n\n [1] /Users/ellakaye/Library/R/arm64/4.3/library\n [2] /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library\n\n──────────────────────────────────────────────────────────────────────────────\n```\n\n\n:::\n:::\n\n\n</details>\n\n\n\n\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

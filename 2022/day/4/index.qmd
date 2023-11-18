@@ -3,8 +3,8 @@ title: "2022: Day 4"
 date: 2022-12-4
 author: 
   - name: Ella Kaye
-categories: [TAG1, TAG2]
-draft: true
+categories: [base R, strings]
+draft: false
 ---
 
 ## Setup
@@ -30,8 +30,31 @@ input <- aoc_input_vector(4, 2022)
 head(input)
 ```
 
+First, we separate the input into a list, where each element is a vector of length 4 of the integers in the input. The regular expression `\D` matches any non-digit character, and `strsplit` splits the input on these. Next, we write a function that takes one of these vectors, and checks whether the range defined by first two integers is contained in the range defined by the second two, or vice versa. Finally, we use `sapply` to apply this function to each element of the list, and the `sum` of a logical vector is equivalent to counting how many are `TRUE`.
+
+```{r}
+
+all_ints <- strsplit(input, "\\D")
+
+range_contain <- function(ints) {
+	all(ints[1]:ints[2] %in% ints[3]:ints[4]) || all(ints[3]:ints[4] %in% ints[1]:ints[2])
+}
+
+sapply(all_ints, range_contain) |> sum()
+```
 
 ## Part 2
+
+Part 2 is almost identical, except we're checking for any overlap in the ranges.
+
+```{r}
+range_overlap <- function(ints) {
+	any(ints[1]:ints[2] %in% ints[3]:ints[4])
+}
+
+sapply(all_ints, range_overlap) |> sum()
+```
+
 
 
 ##### Session info {.appendix}
