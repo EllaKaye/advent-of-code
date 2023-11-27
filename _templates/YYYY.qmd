@@ -20,7 +20,7 @@ h1.title {
   display: none;
 }
 
-```{css}
+```{scss}
 h1.title {
   display: none;
 }

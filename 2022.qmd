@@ -15,7 +15,7 @@ execute:
   echo: false
 ---
 
-```{css}
+```{scss}
 h1.title {
   display: none;
 }
@@ -28,6 +28,7 @@ body.quarto-light a:hover {
 body.quarto-dark a:hover {
   color: #6AD400; //second-color
 //  color: #D46A00; //third-color
+}
 ```
 
 # [2022]{.second-color}
