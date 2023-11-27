@@ -19,7 +19,7 @@ html:
     dark: assets/alt-color-dark.scss
 ---
 
-```{scss}
+```{css}
 h1.title {
   display: none;
 }
