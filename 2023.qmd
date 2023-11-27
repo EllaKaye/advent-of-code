@@ -13,10 +13,6 @@ knitr:
     collapse: true
 execute:
   echo: false
-html:
-  theme: 
-    light: assets/alt-color-light.scss
-    dark: assets/alt-color-dark.scss
 ---
 
 ```{css}

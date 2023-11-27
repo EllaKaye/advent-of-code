@@ -22,12 +22,10 @@ h1.title {
 
 body.quarto-light a:hover {
   color: #6A00D4; //second-color
-//  color: #006AD4; //third-color
 }
 
 body.quarto-dark a:hover {
   color: #6AD400; //second-color
-//  color: #D46A00; //third-color
 }
 ```
 
