@@ -1,0 +1,29 @@
+---
+title: "2023: Introduction"
+date: 2023-11-25
+author: Ella Kaye
+code-tools: false
+---
+
+After a three-year hiatus from working through the puzzles around when they're published, 
+I'm very much looking forward to taking on the challenges daily this December. 
+My excitement levels are such that, in anticipation, 
+I've built this new website and made a [template](https://github.com/EllaKaye/advent-of-code-website-template) version of it should others wish to have a similar site.
+I've also written an accompanying R package, [**aochelpers**](https://ellakaye.github.io/aochelpers), to make it incredibly easy to set up new listings and posts, 
+to get the puzzle input from the Advent of Code website and to read it in to R.
+As I work through this year's challenges, 
+I anticipate adding functions to the package that are useful for solving the puzzles.
+
+Over the past couple of months, I've started experimenting with using LLMs, 
+mostly GitHub Copilot as integrated into RStudio, and a bit of ChatGPT.
+I'm intrigued about what I can learn from these tools, 
+the ways in which they might help me develop my coding and software development skills.
+So far, I've found them helpful at times, frustrating at others. 
+So, this year, I'm going to use Advent of Code as an opportunity to explore the use of these tools further, and to reflect on that experience. 
+As per the instruction on the Advent of Code website, 
+I am **not** going to use [AI to get on the leaderboard](https://adventofcode.com/about#ai_leaderboard). 
+Eric comments there that "I feel like it's harder to get better at programming if you ask an AI to do the programming for you." 
+I don't want AI to do the programming for me, 
+but I do think I can actually get better at coding from judicious use of these tools.
+Let's see!
+

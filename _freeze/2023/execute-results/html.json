@@ -1,0 +1,17 @@
+{
+  "hash": "22a121d5a174ef2853221c91a687b822",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"2023\"\nlisting:\n  contents: \"2023/day\"\n  sort: \"date\"\n  type: table\n  categories: true\n  sort-ui: false\n  filter-ui: false\n  fields: [title, categories]\nknitr:\n  opts_chunk: \n    collapse: true\nexecute:\n  echo: false\nhtml:\n  theme: \n    light: assets/alt-color-light.scss\n    dark: assets/alt-color-dark.scss\n---\n\n::: {.cell}\n<style type=\"text/css\">\nh1.title{display:none}body.quarto-light a:hover{color:#006AD4}body.quarto-dark a:hover{color:#D46A00}\n</style>\n:::\n\n\n# [2023]{.third-color}\n",
+    "supporting": [
+      "2023_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

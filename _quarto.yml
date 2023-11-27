@@ -16,6 +16,8 @@ website:
         href: 2020.qmd
       - text: "2022"
         href: 2022.qmd
+      - text: "2023"
+        href: 2023.qmd
     right:
       - icon: github
         href: https://github.com/EllaKaye/advent-of-code
