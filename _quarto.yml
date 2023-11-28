@@ -1,10 +1,6 @@
 project:
   type: website
-  resources:
-    R
-  # preview:
-  #   port: 4321
-    
+
 website:
   title: "Advent of Code"
   site-url: https://adventofcode.ellakaye.co.uk
