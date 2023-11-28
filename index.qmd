@@ -16,7 +16,9 @@ to download and read in the puzzle inputs,
 and other functions that are useful in	solving the puzzles 
 (with more to be added as I work through the challenges).
 
-The idea for this site came from seeing [Emil Hvitfeldt's version](https://emilhvitfeldt.github.io/rstats-adventofcode/) and also adapts and builds upon code from David Robinson's [adventdrob](https://github.com/dgrtwo/adventdrob) package.
+If you would like a similar site, you can use the template at [EllaKaye/advent-of-code-website-template](https://github.com/EllaKaye/advent-of-code-website-template). Websites from this template work hand-in-hand with **aochelpers**.
+
+The idea for this site came from seeing [Emil Hvitfeldt's version](https://emilhvitfeldt.github.io/rstats-adventofcode/) and **aochelpers** adapts and builds upon code from David Robinson's [adventdrob](https://github.com/dgrtwo/adventdrob) package.
 
 The styling is based on my [personal site](https://ellakaye.co.uk).
 
