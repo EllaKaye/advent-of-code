@@ -17,6 +17,8 @@ website:
     right:
       - icon: github
         href: https://github.com/EllaKaye/advent-of-code
+      - icon: person-circle
+        href: https://ellakaye.co.uk
   open-graph: true
 
 execute:
