@@ -8,25 +8,9 @@ listing:
   sort-ui: false
   filter-ui: false
   fields: [title, categories]
-knitr:
-  opts_chunk: 
-    collapse: true
-execute:
-  echo: false
+include-in-header: 
+  - "assets/listing-no-title.html"
+  - "assets/hover-third-color.html"
 ---
-
-```{css}
-h1.title {
-  display: none;
-}
-
-body.quarto-light a:hover {
-  color: #006AD4; //third-color
-}
-
-body.quarto-dark a:hover {
-  color: #D46A00; //third-color
-}
-```
 
 # [2023]{.third-color}

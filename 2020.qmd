@@ -10,18 +10,9 @@ listing:
   fields: [title, categories]
 code-tools: false
 toc: false
-knitr:
-  opts_chunk: 
-    collapse: true
-execute:
-  echo: false
+include-in-header: 
+  - "assets/listing-no-title.html"
 ---
-
-```{css}
-h1.title {
-  display: none;
-}
-```
 
 # [2020]{.primary}
 

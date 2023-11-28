@@ -1,8 +1,8 @@
 {
-  "hash": "c9163468304bd4ef4bbb579722af153c",
+  "hash": "3874124b9796cbf638d2ca0a441706b0",
   "result": {
     "engine": "knitr",
-    "markdown": "---\ntitle: \"2022\"\nlisting:\n  contents: \"2022/day\"\n  sort: \"date\"\n  type: table\n  categories: true\n  sort-ui: false\n  filter-ui: false\n  fields: [title, categories]\nknitr:\n  opts_chunk: \n    collapse: true\nexecute:\n  echo: false\n---\n\n::: {.cell}\n<style type=\"text/css\">\nh1.title {\n  display: none;\n}\n\nbody.quarto-light a:hover {\n  color: #6A00D4; //second-color\n}\n\nbody.quarto-dark a:hover {\n  color: #6AD400; //second-color\n}\n</style>\n:::\n\n\n# [2022]{.second-color}\n",
+    "markdown": "---\ntitle: \"2022\"\nlisting:\n  contents: \"2022/day\"\n  sort: \"date\"\n  type: table\n  categories: true\n  sort-ui: false\n  filter-ui: false\n  fields: [title, categories]\nknitr:\n  opts_chunk: \n    collapse: true\nexecute:\n  echo: false\ninclude-in-header: \n  - \"assets/listing-no-title.html\"\n  - \"assets/hover-second-color.html\"\n---\n\n\n# [2022]{.second-color}\n",
     "supporting": [
       "2022_files"
     ],
