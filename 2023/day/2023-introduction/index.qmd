@@ -23,7 +23,7 @@ So, this year, I'm going to use Advent of Code as an opportunity to explore the 
 As per the instruction on the Advent of Code website, 
 I am **not** going to use [AI to get on the leaderboard](https://adventofcode.com/about#ai_leaderboard). 
 Eric comments there that "I feel like it's harder to get better at programming if you ask an AI to do the programming for you." 
-I don't want AI to do the programming for me, 
+I don't want AI to do all the programming for me, 
 but I do think I can actually get better at coding from judicious use of these tools.
 Let's see!
 
