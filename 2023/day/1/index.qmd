@@ -83,7 +83,7 @@ string_reverse <- function(x) {
 Next, we need to build the regex for matching a digit/word, 
 both forwards and in reverse.
 We create `nums` first, then collapse it and add the regex for a digit, 
-because we need `nums` later to `match()` a word to it's corresponding value.
+because we need `nums` later to `match()` a word to its corresponding value.
 
 ```{r}
 nums <- c("one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
