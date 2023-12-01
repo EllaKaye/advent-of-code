@@ -32,7 +32,7 @@ head(input)
 ::: {.callout-note collapse="false" icon="false"}
 ## The crux of the puzzle
 
-Combine the first and last digits that appears in each element of `input` to a single two-digit number, then sum them for all elements.
+Combine the first and last digits that appear in each element of `input` to a single two-digit number, then sum them for all elements.
 
 :::
 
