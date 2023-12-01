@@ -3,7 +3,7 @@ title: "2023: Day 1"
 date: 2023-12-1
 author: 
   - name: Ella Kaye
-categories: [base R, tidyverse, strings, regex]
+categories: [base R, C, strings, regex]
 draft: false
 ---
 
@@ -21,6 +21,9 @@ OK <- "2023" < 3000
 # Will only evaluate next code block if an actual year has been substituted for the placeholder
 ```
 
+I solved this puzzle in both R and, stretching myself, C.
+
+### R
 
 ```{r}
 #| eval: !expr OK
@@ -42,11 +45,126 @@ I found this straightforward, similar to [Day 4, 2022](../../../../2022/day/4/in
 get_value <- function(x) {
 	x <- strsplit(x, "") |> unlist()
 	x_nums <- x[x %in% 1:9]
-	paste0(head(x_nums, 1), tail(x_nums, 1)) |> as.numeric()
+	paste0(head(x_nums, 1), tail(x_nums, 1)) |> 
+		as.numeric()
 }
 
 sapply(input, get_value) |> sum()
 ```
+
+### C
+
+Before Advent of Code started this year, 
+I thought if there was one challenge I'd be able to solve in C,
+it would probably be Part 1 of Day 1. 
+When the puzzle was released, it did indeed seem doable, 
+though there was still plenty I had to figure out for the first time.
+This was also an opportunity to get an assist from LLMs, 
+for the parts I was unfamiliar with.
+
+The overall strategy was the same with the R solution, 
+to write a `get_value()` function, then, in `main()`, loop over the input
+calling it on each line. 
+
+First, here's my `get_value()` function. 
+In C, strings are arrays, and this loops over the array in both directions,
+going left-to-right to find the first occurence of a digit,
+then right-to-left to find the last, with each loop breaking once a digit has been found, and updating the value of `value` appropriately.
+
+```{c eval = FALSE}
+int get_value(char input[]) {
+	
+	// get the length of the string
+	int length = strlen(input);
+	
+	// to store the value
+	int value = 0;
+	
+	// find the first digit	
+	for (int i = 0; i < length; i++) {
+		if (input[i] > '0' && input[i] <= '9') {
+
+			// convert to int and update value
+			value = (input[i] - '0')*10;
+			break;
+			
+		}
+	}
+	
+	// find the last digit
+	for (int i = length; i >= 0; i--) {
+		if (input[i] > '0' && input[i] <= '9') {
+
+			value += (input[i] - '0');
+			break;
+			
+		}
+	}
+	
+	return value;
+}
+```
+
+As for the role of LLMs in this, 
+I came up with the overall strategy and Copilot suggested the code 
+`if (input[i] > '0' && input[i] <= '9')` and also `value = (input[i] - '0')` (I needed to amend it with the mulitiplication by 10).
+I hadn't come across character literals before, so I asked ChatGPT to explain the code `value = input[i] - '0'`, which was really helpful.[^1]
+
+[^1]: The key parts of the ChatPGT explanation for me were:
+
+	In C, the code value = (input[i] - '0') is typically used to convert a character representing a digit into its corresponding numeric value. 
+	
+	- `'0'`: This represents the character literal for the digit 0. In the ASCII character set, the digits 0 to 9 are represented consecutively. Therefore, subtracting the ASCII value of '0' from the ASCII value of a digit character gives the numeric value of that digit.
+	- `(input[i] - '0')`: By subtracting the ASCII value of '0' from the ASCII value of the character at `input[i]`, you get the numeric value of the digit represented by that character. This is a common technique used for converting digit characters to their corresponding integer values.
+	
+For `main()`, new to me was reading in input from a file.
+I tried various comments to encourage Copilot to show me the way,
+but it didn't oblige. 
+I found the way on [w3schools](https://www.w3schools.com/c/c_files_read.php).
+One part not covered there is how to ensure that the array in which the line of
+input is stored is an appropriate length, 
+so I used R to find the length of the longest string in my input^[`input |> sapply(nchar) |> max()`], 
+and set the array size to one larger that that.
+
+Here's my `main()`:
+
+```{c eval = FALSE}
+int main(void) {
+	
+	FILE *fptr;
+	
+	// Open a file in read mode
+	fptr = fopen("input", "r");
+	
+	// Store the content of the (line of) the file
+	char input_line[50];
+	
+	// Set up accumulator
+	int total = 0;
+	
+	// Read the content and store it inside input_line
+	while (fgets(input_line, 50, fptr)) {
+		int value = get_value(input_line);
+		total += value;
+	}
+	
+	// Close the file
+	fclose(fptr);
+	
+	printf("%d\n", total);
+}
+```
+
+Putting this all together, including the appropriate header files and function declarations, we get a final [script](script.c){target="_blank"}.
+
+I compiled it with `clang -o script script.c` and ran it with `./script` 
+and was delighted to see the same total print in the console that I'd found with R.[^2]
+
+[^2]: Actually, at first I got the wrong answer because, 
+in the second loop of `get_value()`, I'd used `i > 0` instead of `i >= 0` (damn the difference in indexing between R and C!)
+This mistake is only a problem when the line of input contains just one digit which appears at the beginning of the string (which hadn't been an issue testing this on the example input). 
+I don't know any debugging techniques in C, but I threw in some `printf` statements and, fortuitously, the second line of my input is this problem case, so I spotted it.
+I'm not sure I'd have been so lucky in catching my error if the trouble wasn't caused for several hundred lines of my one thousand line input.
 
 ## Part 2
 
@@ -57,7 +175,7 @@ As Part 1, except this time the 'digit' can also be a word, e.g. "six".
 
 :::
 
-Part 2, on the other hand, was not straightforward at all, 
+Back to R, and Part 2, on the other hand, was not straightforward at all,
 especially for a Day 1 puzzle! 
 At first I was pretty stumped, though after some experimentation and an insight,
 I was able to solve it without recourse to LLMs.
@@ -76,7 +194,10 @@ So first, I wrote a quick function to reverse a string:
 
 ```{r}
 string_reverse <- function(x) {
-	strsplit(x, "") |> unlist() |> rev() |> paste0(collapse = "")
+	strsplit(x, "") |> 
+		unlist() |> 
+		rev() |> 
+		paste0(collapse = "")
 }
 ```
 
@@ -95,17 +216,27 @@ nums_digit_pattern_rev <- paste0(nums_pattern_rev, "|\\d")
 ```
 
 To get the last digit, we can then use `str_extract()` on a reversed input string, 
-though we need to reverse the output back again to turn it into a number-word:
+though we need to reverse the output back again to turn it into a number-word:[^3]
 
 ```{r}
 library(stringr)
 get_last_digit <- function(x) {
-	str_extract(string_reverse(x), nums_digit_pattern_rev) |> string_reverse() 
+	str_extract(string_reverse(x), nums_digit_pattern_rev) |> 
+		string_reverse() 
 }
 ```
 
+[^3]: In retrospect, I could have had a fully base R solution if instead of `str_extract` I'd used
+
+	```
+	matches <- regexpr(nums_digit_pattern_rev, string_reverse(x)) 
+  regmatches(string_reverse(x), m = matches)
+	```
+	
+	but thank goodness for **stringr** with its much more intuitive function names and approach!
+
 We also need to convert the string to a numeric, 
-for either a spelled out word or a digit as a character vector:
+for either a spelled out word or a character digit:
 
 ```{r}
 convert_to_digit <- function(x) {
@@ -136,6 +267,9 @@ get_value2 <- function(x) {
 sapply(input, get_value2) |> sum()
 ```
 
+That was quite a lot for Day 1! 
+Perhaps I'll come back another time and attempt a solution to Part 2 in C,
+but given how tricky that was in R, I expect it would be quite a challenge for me.
 
 ##### Session info {.appendix}
 

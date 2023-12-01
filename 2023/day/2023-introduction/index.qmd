@@ -27,3 +27,7 @@ I don't want AI to do all the programming for me,
 but I do think I can actually get better at coding from judicious use of these tools.
 Let's see!
 
+This year I participated in a [book club to learn C](https://github.com/r-devel/c-book-club).
+I didn't get very far, but I'd like to keep practicing, 
+and so may also attempt to solve some of the puzzles this year in C.
+

@@ -1,4 +1,4 @@
-// attempt to solve Part 1 in C
+// Advent of Code, Day 1 2023, Part 1 in C
 
 #include <stdio.h>
 #include <string.h>
@@ -15,14 +15,13 @@ int main(void) {
 	// Store the content of the file
 	char input_line[50];
 	
+	// Set up accumulator
 	int total = 0;
 	
 	// Read the content and store it inside input_line
 	while (fgets(input_line, 50, fptr)) {
 		int value = get_value(input_line);
-		//printf("%d\n", value);
 		total += value;
-		//printf("%d\n", total);
 		
 	}
 	
@@ -38,10 +37,10 @@ int get_value(char input[]) {
 
 	int value = 0;
 	
+	// find the first digit	
 	for (int i = 0; i < length; i++) {
-		// find the first digit
 		if (input[i] > '0' && input[i] <= '9') {
-			//printf("%c\n", input[i]);
+
 			// convert to int and update value
 			value = (input[i] - '0')*10;
 			break;
@@ -49,7 +48,7 @@ int get_value(char input[]) {
 		}
 	}
 	
-	// now find the last digit
+	// find the last digit
 	for (int i = length; i >= 0; i--) {
 		if (input[i] > '0' && input[i] <= '9') {
 
