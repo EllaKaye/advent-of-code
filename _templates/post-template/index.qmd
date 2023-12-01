@@ -4,7 +4,7 @@ date: YYYY-12-DD
 author: 
   - name: Ella Kaye
 categories: [TAG1, TAG2]
-draft: true
+draft: false
 ---
 
 ## Setup
@@ -30,8 +30,21 @@ input <- aoc_input_vector(DD, YYYY)
 head(input)
 ```
 
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+
+
+
+:::
 
 ## Part 2
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+
+
+
+:::
 
 
 ##### Session info {.appendix}
