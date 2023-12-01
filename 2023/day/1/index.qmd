@@ -1,0 +1,169 @@
+---
+title: "2023: Day 1"
+date: 2023-12-1
+author: 
+  - name: Ella Kaye
+categories: [base R, tidyverse, strings, regex]
+draft: false
+---
+
+## Setup
+
+[The original challenge](https://adventofcode.com/2023/day/1)
+
+[My data](input){target="_blank"}
+
+## Part 1
+
+```{r}
+#| echo: false
+OK <- "2023" < 3000
+# Will only evaluate next code block if an actual year has been substituted for the placeholder
+```
+
+
+```{r}
+#| eval: !expr OK
+library(aochelpers)
+input <- aoc_input_vector(1, 2023)
+head(input)
+```
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+
+Combine the first and last digits that appears in each element of `input` to a single two-digit number, then sum them for all elements.
+
+:::
+
+I found this straightforward, similar to [Day 4, 2022](../../../../2022/day/4/index.qmd). 
+
+```{r}
+get_value <- function(x) {
+	x <- strsplit(x, "") |> unlist()
+	x_nums <- x[x %in% 1:9]
+	paste0(head(x_nums, 1), tail(x_nums, 1)) |> as.numeric()
+}
+
+sapply(input, get_value) |> sum()
+```
+
+## Part 2
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+
+As Part 1, except this time the 'digit' can also be a word, e.g. "six".
+
+:::
+
+Part 2, on the other hand, was not straightforward at all, 
+especially for a Day 1 puzzle! 
+At first I was pretty stumped, though after some experimentation and an insight,
+I was able to solve it without recourse to LLMs.
+
+Like Part 1, I wrote a function that works on one line of input, then applied it to all of them.
+Unlike Part 1, it doesn't suit splitting up the string into characters -- 
+instead we need to bring on the regex!
+
+My first thought was `str_extract_all` from the **stringr** package, 
+but that couldn't handle the overlapping words, 
+e.g. in `"eightwothree"` it found `"eight"` and `"three"`, but not `"two"`.
+`str_extract()` is good for finding the first match for a digit/word though.
+
+The breakthrough insight that got me to my solution is that finding the last digit/word is equivalent to finding the first digit/word of the string in reverse. 
+So first, I wrote a quick function to reverse a string:
+
+```{r}
+string_reverse <- function(x) {
+	strsplit(x, "") |> unlist() |> rev() |> paste0(collapse = "")
+}
+```
+
+Next, we need to build the regex for matching a digit/word, 
+both forwards and in reverse.
+We create `nums` first, then collapse it and add the regex for a digit, 
+because we need `nums` later to `match()` a word to it's corresponding value.
+
+```{r}
+nums <- c("one", "two", "three", "four", "five", "six", "seven", "eight", "nine")
+nums_pattern <- paste(nums, collapse = "|")
+nums_digit_pattern <- paste0(nums_pattern, "|\\d")
+
+nums_pattern_rev <- string_reverse(nums_pattern)
+nums_digit_pattern_rev <- paste0(nums_pattern_rev, "|\\d")
+```
+
+To get the last digit, we can then use `str_extract()` on a reversed input string, 
+though we need to reverse the output back again to turn it into a number-word:
+
+```{r}
+library(stringr)
+get_last_digit <- function(x) {
+	str_extract(string_reverse(x), nums_digit_pattern_rev) |> string_reverse() 
+}
+```
+
+We also need to convert the string to a numeric, 
+for either a spelled out word or a digit as a character vector:
+
+```{r}
+convert_to_digit <- function(x) {
+	if (nchar(x) == 1) {
+		x <- as.numeric(x)
+	} else {
+		x <- match(x, nums)
+	}
+	x
+}
+```
+
+Putting this all together:
+
+```{r}
+get_value2 <- function(x) {
+
+	first <- str_extract(x, nums_digit_pattern)
+	
+	last <- get_last_digit(x)
+	
+	first_digit <- convert_to_digit(first)
+	last_digit <- convert_to_digit(last)
+	
+	10*first_digit + last_digit
+}
+
+sapply(input, get_value2) |> sum()
+```
+
+
+##### Session info {.appendix}
+
+<details><summary>Toggle</summary>
+
+```{r}
+#| echo: false
+library(sessioninfo)
+# save the session info as an object
+pkg_session <- session_info(pkgs = "attached")
+
+# get the quarto version
+quarto_version <- system("quarto --version", intern = TRUE)
+
+# inject the quarto info
+pkg_session$platform$quarto <- paste(
+  system("quarto --version", intern = TRUE), 
+  "@", 
+  quarto::quarto_path()
+  )
+
+# print it out
+pkg_session
+```
+
+</details>
+
+
+
+
+
