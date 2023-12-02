@@ -1,0 +1,191 @@
+---
+title: "2023: Day 2"
+date: 2023-12-2
+author: 
+  - name: Ella Kaye
+categories: [base R, strings, regex]
+draft: false
+---
+
+## Setup
+
+[The original challenge](https://adventofcode.com/2023/day/2)
+
+[My data](input){target="_blank"}
+
+## Part 1
+
+```{r}
+#| echo: false
+OK <- "2023" < 3000
+# Will only evaluate next code block if an actual year has been substituted for the placeholder
+```
+
+
+```{r}
+#| eval: !expr OK
+library(aochelpers)
+input <- aoc_input_vector(2, 2023)
+head(input)
+```
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+A game is possible if, in every draw, there are no more than 12 red cubes, 13 green cubes and 14 blue cubes. Find the sum of the IDs of the possible games.
+:::
+
+This input looks like it might be well-suited to a tidyverse approach, but I decided to stick with base R plus **stringr**, solving the challenge via a series of custom functions.
+
+First, we need, in a couple of places, to extract the first number from a string:
+
+```{r}
+library(stringr)
+extract_first_num <- function(x) {
+	x |> 
+		str_extract("\\d+") |> 
+		as.numeric()
+}
+```
+
+From a row of `input`, we next want a vector of the draws, 
+i.e. not the game ID, and the string separated at the `";"`:
+
+```{r}
+get_draws <- function(game) {
+	game |> 
+		str_split(":|;") |> 
+		unlist() |> 
+		tail(-1) # discard the game ID
+}
+```
+
+From a draw, for each colour, we want to know the number of balls drawn:
+
+```{r}
+colour_val <- function(draw, colour) {
+	# separate colours
+	split_draw <- str_split(draw, ",") |> unlist() 
+
+	# get value for the color
+	num <- split_draw[str_detect(split_draw, colour)] |> 
+		extract_first_num() |> 
+			as.numeric()
+
+	# deal with 0-length vector if colour doesn't appear in draw
+	ifelse((length(num) == 1), num, 0) 
+}
+```
+
+Now we can determine if a draw is possible:
+
+```{r}
+draw_possible <- function(draw) {
+	if (colour_val(draw, "red") > 12 
+			|| colour_val(draw, "green") > 13 
+			|| colour_val(draw, "blue") > 14) {
+		FALSE
+		} else {
+		TRUE
+	}
+}	
+```
+
+A game is possible if all draws are possible.
+For a possible game, we want a function that returns the game ID.
+Since we'll be summing over these, we return 0 if the game is not possible.
+
+```{r}
+game_possible <- function(game) {
+	game_ID <- extract_first_num(game)
+
+	draws <- get_draws(game)
+
+	all_possible <- draws |> 
+		sapply(draw_possible) |> 
+		all()
+
+		ifelse(all_possible, game_ID, 0)
+}
+```
+
+Finally, we check all games for whether they're possible, 
+and find the sum of the IDs:
+
+```{r}
+input |> 
+	sapply(game_possible) |> 
+	sum()
+```
+
+
+## Part 2
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+What is the fewest number of cubes of each colour that could have been in the bag to make the game possible? Multiply these together for each game (the *power*), then sum the power across all games.
+:::
+
+Some of the functions written for Part 1 come in handy here.
+We need to look across all the draws in a game and find the max of each colour; that is the fewest of each colour we need. 
+
+```{r}
+fewest_of_colour <- function(draws, colour) {
+	draws |> 
+		sapply(colour_val, colour) |> 
+		max()
+}
+```
+
+To find the power of a set of cubes:
+
+```{r}
+power_cubes <- function(draws) {
+	red <- fewest_of_colour(draws, "red")
+	blue <- fewest_of_colour(draws, "blue")
+	green <- fewest_of_colour(draws, "green")
+
+	red * blue * green
+}
+```
+
+Putting these together, starting with the full `input`:
+
+```{r}
+input |> 
+	sapply(get_draws) |> 
+	sapply(power_cubes) |> 
+	sum()
+```
+
+I completed Day 2 without any recourse to LLMs.
+
+##### Session info {.appendix}
+
+<details><summary>Toggle</summary>
+
+```{r}
+#| echo: false
+library(sessioninfo)
+# save the session info as an object
+pkg_session <- session_info(pkgs = "attached")
+
+# get the quarto version
+quarto_version <- system("quarto --version", intern = TRUE)
+
+# inject the quarto info
+pkg_session$platform$quarto <- paste(
+  system("quarto --version", intern = TRUE), 
+  "@", 
+  quarto::quarto_path()
+  )
+
+# print it out
+pkg_session
+```
+
+</details>
+
+
+
+
+
