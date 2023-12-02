@@ -41,6 +41,7 @@ format:
       dark: assets/ek-dark.theme
     smooth-scroll: true
     link-external-newwindow: true
+    tab-stop: 2
 
 editor: source
 
