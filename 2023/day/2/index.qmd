@@ -69,7 +69,7 @@ colour_val <- function(draw, colour) {
 	# get value for the color
 	num <- split_draw[str_detect(split_draw, colour)] |> 
 		extract_first_num() |> 
-			as.numeric()
+		as.numeric()
 
 	# deal with 0-length vector if colour doesn't appear in draw
 	ifelse((length(num) == 1), num, 0) 
