@@ -3,7 +3,7 @@ title: "2023: Day 1"
 date: 2023-12-1
 author: 
   - name: Ella Kaye
-categories: [base R, C, strings, regex]
+categories: [base R, C, strings, regex, Copilot, ChatGPT]
 draft: false
 ---
 
@@ -120,7 +120,7 @@ I hadn't come across character literals before, so I asked ChatGPT to explain th
 For `main()`, new to me was reading in input from a file.
 I tried various comments to encourage Copilot to show me the way,
 but it didn't oblige. 
-I found the way on [w3schools](https://www.w3schools.com/c/c_files_read.php).
+I found an example I could adapt on [w3schools](https://www.w3schools.com/c/c_files_read.php).
 One part not covered there is how to ensure that the array in which the line of
 input is stored is an appropriate length, 
 so I used R to find the length of the longest string in my input^[`input |> sapply(nchar) |> max()`], 
@@ -221,7 +221,9 @@ though we need to reverse the output back again to turn it into a number-word:[^
 ```{r}
 library(stringr)
 get_last_digit <- function(x) {
-	str_extract(string_reverse(x), nums_digit_pattern_rev) |> 
+	x |> 
+		string_reverse() |> 
+		str_extract(nums_digit_pattern_rev) |> 
 		string_reverse() 
 }
 ```
