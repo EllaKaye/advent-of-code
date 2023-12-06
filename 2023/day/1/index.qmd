@@ -3,7 +3,7 @@ title: "2023: Day 1"
 date: 2023-12-1
 author: 
   - name: Ella Kaye
-categories: [base R, C, strings, regex, Copilot, ChatGPT]
+categories: [base R, C, strings, regex, Copilot, ChatGPT, ⭐⭐]
 draft: false
 ---
 
