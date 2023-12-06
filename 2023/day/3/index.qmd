@@ -1,0 +1,312 @@
+---
+title: "2023: Day 3"
+date: 2023-12-3
+author: 
+  - name: Ella Kaye
+categories: [tidyverse, grids, adventdrob, ⭐⭐]
+draft: false
+---
+
+## Setup
+
+[The original challenge](https://adventofcode.com/2023/day/3)
+
+[My data](input){target="_blank"}
+
+## Part 1
+The input for this puzzle represents a grid. 
+When I was writing the [**aochelpers**](https://ellakaye.github.io/aochelpers) package,
+I came across David Robinson's [**adventdrob**](https://github.com/dgrtwo/adventdrob) package,
+which contains functions that he finds useful for working with grids in Advent of Code challenges,
+in particular `grid_tidy()` and `adjacent_join()`.
+I have struggled with grid puzzles in the past, so when I saw today's, 
+I immediately thought of using these functions.
+I didn't have much time today to dedicate to Advent of Code, 
+so instead of attempting to solve the puzzle myself, 
+instead I decided to spend that time unpicking David's [solution](https://fosstodon.org/@drob/111514861427443202). 
+He had already posted it, and, unsurprisingly, used his package to solve it.
+I hope that this makes it easier for me to approach future Advent of Code grid puzzles.
+
+Since I'm writing up this post as a record of understanding someone else's code,
+I'm going to work through it with the example input:
+
+```
+467..114..
+...*......
+..35..633.
+......#...
+617*......
+.....+.58.
+..592.....
+......755.
+...$.*....
+.664.598..
+```
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+Find the sum of all the numbers that are adjacent (including diagonally) to a symbol.
+:::
+
+First, I used the "paste as tribble" RStudio addin from the [**datapasta**](https://milesmcbain.github.io/datapasta/) package get the example input into R:
+
+```{r}
+input <- tibble::tribble(
+  ~ X1,
+   "467..114..",
+   "...*......",
+   "..35..633.",
+   "......#...",
+   "617*......",
+   ".....+.58.",
+   "..592.....",
+   "......755.",
+   "...$.*....",
+   ".664.598.."
+  )
+
+```
+
+::: {.callout-warning}
+The **datapasta** addin turns the first row into a column header, 
+so I needed to adjust that. 
+I called it `X1` as that'll be the colname when reading in the full input with `aoc_input_data_frame()`,
+
+Also, and this really caught me out,
+it interprets `#` as signifying a comment, so doesn't copy that, 
+or anything to its right. That meant row 4 was pasted as `"......"` 
+and I had to write in the rest of the line.
+:::
+
+I'll break down David's solution more-or-less line by line.
+`grid_tidy()` takes a data frame and, for a given column,
+produces a data frame with one row per character, 
+with the value of that character, and a column for each of its row and column positions in the grid:
+
+```{r}
+library(tidyverse)
+library(adventdrob)
+g <- input |> 
+  adventdrob::grid_tidy(X1) 
+g
+```
+
+We need to be able to identify the numbers.
+At various point in what follows, that means both for individual characters,
+but also being able to know what part number they're part of. 
+The last line of the following is a clever trick for identifying which digits group together:
+
+```{r}
+g <- g |> 
+	mutate(is_digit = str_detect(value, "\\d")) |>
+	group_by(row) |> 
+	mutate(number_id = paste0(row, ".", consecutive_id(is_digit))) 
+g
+```
+
+The new `consecutive_id` function from **dplyr** is doing a lot of heavy lifting here.
+It generates a unique identifier that increments every time a variable (or combination of variables) changes.^[David actually did something much fiddlier to get the same thing.
+It was Tan Ho, in the Advent of Code channel on the R4DS Slack, 
+who later suggested this much neater option.]
+
+Now that we know which digits belong together, 
+we need to keep track of what the actual part number is:
+
+```{r}
+g <- g |> 
+  group_by(number_id) |> 
+  mutate(part_number = as.numeric(paste(value, collapse = ""))) |> 
+	ungroup() 
+g
+```
+
+This is the first time I'd seen this this trick to combine the values in several rows into one, and I feel like it's a good one to know now!
+
+This data frame, `g`, is what we need for both parts, 
+so let's leave it as that, and use it to start a new data frame for Part 1.
+
+We want to find the part numbers that are adjacent to symbols.
+So first, we narrow our attention just to the rows that represent part numbers, then look at what's around them. 
+`adjacent_join()` from **adventdrob** is designed exactly for this:
+
+```{r}
+p1 <- g |> 
+  filter(!is.na(part_number)) |> 
+  adventdrob::adjacent_join(g, diagonal = TRUE) |> 
+  arrange(row, col)
+p1
+```
+
+It's a little tricky to see how this works from the first 10 rows, so let's look at, for example, all eight characters around the "3" in the third column of the third row, and their row and column positions in the grid:
+
+```{r}
+p1 |> 
+  filter(row == 3 & col == 3) |> 
+  select(value2, row2, col2)
+```
+
+We only need to know which values are adjacent to symbols, 
+so we discard the the adjectent elements (`value2`) that are either digits or ".":
+
+```{r}
+p1 <- p1 |> 
+	filter(value2 != ".", !is_digit2)
+p1
+```
+
+Almost there. Some part numbers have more than one character adjacent to a symbol,
+e.g. both the 3 and 5 of the 35 are adjacent to the *, so we need to discard duplicate part numbers, then sum over them:
+
+```{r}
+p1 |> 
+	distinct(number_id, .keep_all = TRUE) |> 
+	summarise(sum_part_numbers = sum(part_number)) |> 
+	pull(sum_part_numbers)  
+```
+
+Done! I'll come back to my input at the end of this post, 
+putting everything together, 
+once we've gone through both parts.
+
+## Part 2
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+A **gear** is any `*` symbol that is adjacent to **exactly two part numbers**. Its **gear ratio** is the result of multiplying those two numbers together. Find the sum of all our gear ratios.
+:::
+
+Let's go back to `g` and this time start by find everything that's next to a gear.
+I'm also going to discard columns that we don't need (so all columns get printed):
+
+```{r}
+p2 <- g |> 
+	filter(value == "*") |> 
+	adventdrob::adjacent_join(g, diagonal = TRUE) |> 
+  select(-value, -part_number, -is_digit, -is_digit2)
+p2
+```
+
+We only need the gears that are next to numbers:
+
+```{r}
+p2 <- p2 |> 
+  arrange(row, col) |> 
+	filter(!is.na(part_number2)) 
+p2
+```
+There's some duplication here, 
+for example the gear in the 2nd row is next to both the "3" and the "5",
+so we filter appropriately, then summarise to create the information we'll need to filter on and use in computation later:
+
+```{r}
+p2 <- p2 |> 
+	distinct(number_id2, .keep_all = TRUE) |> 
+  group_by(row, col) |> 
+  summarise(n_adjacent_numbers = n(),
+            gear_ratio = prod(part_number2),
+            .groups = "drop")
+p2
+```
+
+`.groups` is an experiment feature in **dplyr** that controls the grouping structure of the output, and `"drop"` says all grouping levels are dropped. 
+I wondered why David had used `group_by` rather than `.by` within summarise,
+but it turns out you can't use both `.by` and `.groups` in the same call.
+
+We finish by finding the gears (i.e. where the `*` is adjacent to just two parts), 
+then summing their ratios:
+
+```{r}
+p2 |> 
+	filter(n_adjacent_numbers == 2) |>
+	summarise(sum_gear_ratios = sum(gear_ratio)) |> 
+	pull(sum_gear_ratios)  
+```
+
+## My input
+Let's put that all together, using my input.
+
+```{r}
+#| echo: false
+OK <- "2023" < 3000
+# Will only evaluate next code block if an actual year has been substituted for the placeholder
+```
+
+```{r}
+#| eval: !expr OK
+library(aochelpers)
+input <- aoc_input_data_frame(3, 2023)
+```
+
+```{r}
+g <- input |> 
+	adventdrob::grid_tidy(X1) |> 
+	mutate(is_digit = str_detect(value, "\\d")) |>
+	group_by(row) |> 
+	mutate(number_id = paste0(row, ".", consecutive_id(is_digit))) |>
+	group_by(number_id) |> 
+	mutate(part_number = as.numeric(paste(value, collapse = ""))) |> 
+	ungroup() 
+```
+
+### Part 1
+
+```{r}
+g |> 
+	filter(!is.na(part_number)) |> 
+	adventdrob::adjacent_join(g, diagonal = TRUE) |> 
+	arrange(row, col) |> 
+	filter(value2 != ".", !is_digit2) |> 
+	distinct(number_id, .keep_all = TRUE) |> 
+	summarise(sum_part_numbers = sum(part_number)) |> 
+	pull(sum_part_numbers)
+```
+
+### Part 2
+
+```{r}
+g |> 
+	filter(value == "*") |> 
+	adventdrob::adjacent_join(g, diagonal = TRUE) |> 
+	arrange(row, col) |> 
+	filter(!is.na(part_number2)) |>
+	distinct(row, col, number_id2, .keep_all = TRUE) |>
+	group_by(row, col) |> 
+	summarise(n_adjacent_numbers = n(),
+						gear_ratio = prod(part_number2),
+						.groups = "drop") |> 
+	filter(n_adjacent_numbers == 2) |>
+	summarise(sum_gear_ratios = sum(gear_ratio)) |> 
+	pull(sum_gear_ratios)
+```
+
+
+##### Session info {.appendix}
+
+<details><summary>Toggle</summary>
+
+```{r}
+#| echo: false
+library(sessioninfo)
+# save the session info as an object
+pkg_session <- session_info(pkgs = "attached")
+
+# get the quarto version
+quarto_version <- system("quarto --version", intern = TRUE)
+
+# inject the quarto info
+pkg_session$platform$quarto <- paste(
+  system("quarto --version", intern = TRUE), 
+  "@", 
+  quarto::quarto_path()
+  )
+
+# print it out
+pkg_session
+```
+
+</details>
+
+
+
+
+

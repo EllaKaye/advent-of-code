@@ -1,0 +1,296 @@
+---
+title: "2023: Day 5"
+date: 2023-12-5
+author: 
+  - name: Ella Kaye
+categories: [base R, tidyverse, loops, ⭐]
+draft: false
+---
+
+## Setup
+
+[The original challenge](https://adventofcode.com/2023/day/5)
+
+[My data](input){target="_blank"}
+
+## Part 1
+
+```{r}
+#| echo: false
+OK <- "2023" < 3000
+# Will only evaluate next code block if an actual year has been substituted for the placeholder.
+```
+
+
+```{r}
+#| eval: !expr OK
+library(aochelpers)
+library(tidyverse)
+#input <- aoc_input_vector(5, 2023)
+input <- read_lines(here::here("2023", "day", "5", "example-input"))
+head(input)
+```
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+Given a set of seeds, and a set of maps, use the maps to find the location of the closest seed.
+:::
+
+Big struggle today. 
+On December 5th itself, I finally produced a solution that worked on the example input,
+even though I knew by then that my approach wouldn't work on actual input.
+My first attempt was a strange mash-up of base R and tidyverse, via various digressions.
+It runs into memory issues on the full input. 
+I was so determined at least to get something on the example input that I ploughed on with it regardless,
+even introducing a fudge to make it work on the specific example.
+
+I'll document the wrong approach here, as a reminder of what not to do, 
+then show a working solution that I figured out the following day, 
+thanks to a tip from Tan Ho on the R4DS Slack.
+
+The first part, wrangling the data, is the same for both approaches.
+
+Wrangle the data:
+
+```{r}
+# Split the input at the blank lines, then remove the blank lines
+split_input <- split(input, cumsum(input == "")) |> 
+	lapply(\(x) x[x != ""])
+
+# Get a vector of the seeds
+seeds <- split_input[[1]] |> 
+	aochelpers::extract_numbers()
+
+# A list of the maps, without the map names
+maps <- tail(split_input, -1) |> 
+	lapply(\(x) tail(x, -1))
+```
+
+### A wrong approach
+
+For each map, make a tibble for every possible source-destination pair. 
+In retrospect, this is where I started to go wrong.
+These tibbles are billions of lines long on the full input, 
+and we don't need every possible pair.
+
+Take a single item from a map, e.g. `"50 98 2"` and make a tibble:
+
+```{r}
+make_map <- function(x) {
+	n <- x[3]
+	tibble(
+		source = x[2]:(x[2]+n-1),
+		destination = x[1]:(x[1]+n-1)
+	)
+}
+```
+
+Take a whole map, use `make_map` for each map item, and bind into a big data frame.
+This is where the it fails on the full input. 
+The combined data frame runs out of memory.
+By the time I put in the fudge to make this work on the example input, 
+I knew that my approach wouldn't work on the full input, which is why it's only part implemented.
+I would have needed a better approach for tracking source elements that aren't covered by the map.
+```{r}
+make_map_df <- function(map, vec = NULL) {
+	
+	map <- map |> 
+		lapply(extract_numbers) |>
+		lapply(make_map) |>
+		bind_rows() 
+	
+	# account for elements in source not in a range on the map
+	# only implement for elements less than the minimum source
+	# as a fudge to get this to work on the example data.
+	if (!is.null(vec)) {
+		
+		min_source <- min(map$source)
+		min_vec <- min(vec)
+		
+		if (min_vec < min_source) {
+			extra_vec <- min_vec:(min_source-1)
+			extra_rows <- tibble(source = extra_vec, destination = extra_vec) 
+			map <- bind_rows(extra_rows, map)
+		}
+	} 
+	
+	map |> 
+		arrange(source)
+}
+```
+
+A function that joins two map tables to link the destination with the source.
+This adds even more rows! 
+It did, at least, give me an opportunity to learn about the new `join_by()` function in dplyr v1.1.
+
+```{r}
+build_map_table <-  function(map_table, map) {
+	full_join(map_table, map, join_by(destination == source)) |> 
+		mutate(destination.y = if_else(is.na(destination.y), destination, destination.y)) |> 
+		select(-destination) |> 
+		rename(destination = destination.y)
+}
+```
+
+Start with the seed-to-soil map, then iterate over the maps, 
+joining them to make new source-to-destination links.
+
+```{r}
+map_table <- make_map_df(maps[[1]], seeds) 
+for (i in 2:length(maps)) {
+	map_df <- make_map_df(maps[[i]])
+	map_table <- build_map_table(map_table, map_df)
+}
+```
+
+In the final `map_table`, the source column represents the seeds 
+and the destination column represents the location. 
+We have our minumum location, at least for the example data.
+
+```{r}
+map_table |> 
+	filter(source %in% seeds) |> 
+	summarise(min_location = min(destination)) |>
+	pull(min_location)
+```
+
+Lessons learnt:
+
+- spend time looking at actual input and thinking of an appropriate strategy for that scale
+- don't plough on with a solution for the example input when I know it won't work on the full input
+
+### A right approach
+
+A tip from Tan Ho to work with information describing the the ranges, 
+rather than expanding them in full, got me on the right track.
+I also wasn't helped above by the mash-up of tidyverse and base R approaches,
+so I went back to the familiar strategy of writing a function that takes one seed and returns its location, 
+and applying it to all seeds to find the minimum.
+We need a few helper functions first.
+
+```{r}
+# `source` is a single element in the source, e.g. seeds[1], 
+# and `item` is a single line of a map, e.g. "50 98 2"
+# returns a logical indicating whether the source is in the range 
+# described by the item
+source_in_range <- function(source, item) {
+	item <- aochelpers::extract_numbers(item)
+	
+	if (source >= item[2] && source <= item[2] + item[3] - 1) {
+		return(TRUE)
+	}
+	else {
+		return(FALSE)
+	}
+}
+```
+
+```{r}
+# source is as above
+# map is a full map, i.e. a single elements of `maps`
+# returns a single element, the value of the destination
+source_to_destination <- function(source, map) {
+	
+	# check if source is in each range
+	# logical vector of length(map)
+	is_in_range <- purrr::map_lgl(map, \(x) source_in_range(source, x))
+	which_range <- which(is_in_range)
+	
+	if (length(which_range) == 0) {
+		return(source)
+	}
+	else {
+		# get the item that contains the source
+		item <- map[which_range] |> extract_numbers()
+		destination <- source - item[2] + item[1]
+		return(destination)
+	}
+}
+```
+
+```{r}
+# starting with a seed, this function iterates over all the maps 
+# to return the value of the location.
+seed_to_location <- function(seed, maps) {
+	
+	# start with the seed
+	source <- seed
+	
+	# iterate over maps
+	for (i in seq_along(maps)) {
+		# get the destination
+		destination <- source_to_destination(source, maps[[i]])
+		# set the source to the destination
+		source <- destination
+		#cat(paste0("round ", i, ": source ", source, "\n"))
+	}
+	
+	# return the final destination
+	destination
+}
+```
+
+Now let's read in our actual input and wrangle it as before:
+
+```{r}
+input <- aoc_input_vector(5, 2023)
+split_input <- split(input, cumsum(input == "")) |> 
+	lapply(\(x) x[x != ""])
+
+seeds <- split_input[[1]] |> extract_numbers()
+
+maps <- tail(split_input, -1) |> 
+	lapply(\(x) tail(x, -1))
+```
+
+Finally, we apply `source_to_destination()` to all the seeds and find the minimum:
+
+```{r}
+seeds |> 
+	sapply(\(x) seed_to_location(x, maps)) |> 
+	min()
+```
+
+Got there!
+
+## Part 2
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+Find the lowest location number for any initial seed, 
+but from a *much* larger set of seeds than in Part 1.
+:::
+
+Not attempted (yet).
+
+
+##### Session info {.appendix}
+
+<details><summary>Toggle</summary>
+
+```{r}
+#| echo: false
+library(sessioninfo)
+# save the session info as an object
+pkg_session <- session_info(pkgs = "attached")
+
+# get the quarto version
+quarto_version <- system("quarto --version", intern = TRUE)
+
+# inject the quarto info
+pkg_session$platform$quarto <- paste(
+  system("quarto --version", intern = TRUE), 
+  "@", 
+  quarto::quarto_path()
+  )
+
+# print it out
+pkg_session
+```
+
+</details>
+
+
+
+
+

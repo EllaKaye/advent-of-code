@@ -1,0 +1,255 @@
+---
+title: "2023: Day 4"
+date: 2023-12-4
+author: 
+  - name: Ella Kaye
+categories: [base R, strings, loops, ⭐⭐]
+draft: false
+---
+
+## Setup
+
+[The original challenge](https://adventofcode.com/2023/day/4)
+
+[My data](input){target="_blank"}
+
+## Part 1
+
+```{r}
+#| echo: false
+OK <- "2023" < 3000
+# Will only evaluate next code block if an actual year has been substituted for the placeholder.
+```
+
+
+```{r}
+#| eval: !expr OK
+library(aochelpers)
+# other options: aoc_input_data_frame(), aoc_input_matrix()
+input <- aoc_input_vector(4, 2023)
+head(input)
+```
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+For each card, the numbers to the `left` of the `|` are the winning numbers, 
+and the numbers to the `right` of the `|` are the numbers we have. 
+We need to find the number of matches between the two sets. 
+The first match makes the card worth one point 
+and each match after the first doubles the point value of that card. 
+How many points do we have in total?
+:::
+
+After yesterday's foray into grids, we're back into much more familiar territory today. 
+The handling of the strings is similar to [Day 2](../2/index.qmd), 
+as is the strategy of writing a function to find the worth of one card, 
+then applying that to all cards and finding the sum. 
+I'm once again using a combination of base R plus **stringr**.
+
+First, here's a function that finds how many matches there are for a card.
+This function will prove useful in Part 2 as well.
+
+```{r}
+library(stringr)
+n_card_matches <- function(card) {
+  # split the string into a vector of length 3:
+  # the card ID, the winning numbers, and the numbers we have
+	card_split <- str_split(card, ":|\\|") |> unlist()
+	
+	# for the strings representing sets of values,
+	# split into a vector of individual numeric values
+	winning_numbers <- card_split[2] |> 
+		str_extract_all("\\d+") |> 
+		unlist() |> 
+		as.numeric()
+	
+	my_numbers <- card_split[3] |> 
+		str_extract_all("\\d+") |> 
+		unlist() |> 
+		as.numeric()
+	
+	# the number of matches 
+	sum(my_numbers %in% winning_numbers)
+}
+```
+
+We can use this in a function to find the worth of a card:^[We need to handle the case of no matches separately, 
+otherwise we'd get a value of 0.5 when `n_winners` is 0.] 
+
+```{r}
+card_worth <- function(card) {
+	
+	n_winners <- card |> 
+		n_card_matches() 
+	
+	ifelse(n_winners == 0, 0, 2^(n_winners-1))
+}
+```
+
+Now apply this to all cards, and find the total:
+
+```{r}
+sapply(input, card_worth) |> sum()
+```
+
+
+## Part 2
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+This is hard to summarise, and took me a while to get my head around,
+so here's the full puzzle description and example input:
+
+Now scratchcards only cause you to win more scratchcards equal to the number of winning numbers you have.
+
+Specifically, you win copies of the scratchcards below the winning card equal to the number of matches. So, if card 10 were to have 5 matching numbers, you would win one copy each of cards 11, 12, 13, 14, and 15.
+
+Copies of scratchcards are scored like normal scratchcards and have the same card number as the card they copied. So, if you win a copy of card 10 and it has 5 matching numbers, it would then win a copy of the same cards that the original card 10 won: cards 11, 12, 13, 14, and 15. This process repeats until none of the copies cause you to win any more cards. (Cards will never make you copy a card past the end of the table.)
+
+This time, the above example goes differently:
+
+```
+Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
+Card 2: 13 32 20 16 61 | 61 30 68 82 17 32 24 19
+Card 3:  1 21 53 59 44 | 69 82 63 72 16 21 14  1
+Card 4: 41 92 73 84 69 | 59 84 76 51 58  5 54 83
+Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36
+Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11
+```
+
+- Card 1 has four matching numbers, so you win one copy each of the next four cards: cards 2, 3, 4, and 5.
+- Your original card 2 has two matching numbers, so you win one copy each of cards 3 and 4.
+- Your copy of card 2 also wins one copy each of cards 3 and 4.
+- Your four instances of card 3 (one original and three copies) have two matching numbers, so you win four copies each of cards 4 and 5.
+- Your eight instances of card 4 (one original and seven copies) have one matching number, so you win eight copies of card 5.
+- Your fourteen instances of card 5 (one original and thirteen copies) have no matching numbers and win no more cards.
+- Your one instance of card 6 (one original) has no matching numbers and wins no more cards.
+
+Once all of the originals and copies have been processed, 
+you end up with 1 instance of card 1, 
+2 instances of card 2, 
+4 instances of card 3, 
+8 instances of card 4, 
+14 instances of card 5, 
+and 1 instance of card 6. 
+In total, this example pile of scratchcards causes you to ultimately have 30 scratchcards!
+
+Process all of the original and copied scratchcards until no more scratchcards are won. Including the original set of scratchcards, how many total scratchcards do you end up with?
+:::
+
+My solution below may appear simple, but it took me a while to get my head round,
+so I want here to explain really clearly what each part of the code is doing,
+primarily for my own future reference. 
+I'll do this by demonstating it on the example input:
+
+```{r}
+input <- c("Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53", 
+           "Card 2: 13 32 20 16 61 | 61 30 68 82 17 32 24 19", 
+           "Card 3:  1 21 53 59 44 | 69 82 63 72 16 21 14  1", 
+           "Card 4: 41 92 73 84 69 | 59 84 76 51 58  5 54 83", 
+           "Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36", 
+           "Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11")
+```
+
+
+The overall strategy is first to create a vector, `n_of_card`, 
+to store the number we have of each card. 
+We then iterate over the cards, 
+first processing Card 1, 
+then all copies of Card 2,
+then all copies of Card 3 etc until we've been through all the card numbers.
+In each round of the loop, we update `n_of_card` to account for the copies won, 
+so that any point, the value of `n_of_card[i]` is the number of copies of card `i` that we have.
+
+We start with one of each card, so let's initialise `n_of_card` to that:
+
+```{r}
+n_of_card <- rep(1, length(input))
+```
+
+Then the loop. 
+I've added a print statement to hopefully make it clear what's happening in each iteration.
+We don't see anything printed for Card 5 and 6 as no additional cards are won so there's nothing to do.
+
+```{r}
+for (i in seq_along(n_of_card)) {
+	
+	# get number cards won
+	n_won <- n_card_matches(input[i])
+
+	# process cards won, if any
+	if (n_won > 0) {
+		# get indices of cards won:
+		# this is a sequence of length n_won, starting at i+1
+		cards_won <- (i+1):(i+n_won)
+		
+		# update the appropiate elements of n_of_card
+		n_of_card[cards_won] <- n_of_card[cards_won] + n_of_card[i]
+		
+		cat(paste("After all copies of card", i, 
+		          "have been processed we have\n", 
+		          paste(n_of_card, collapse = ", "), 
+		          "copies of cards 1 to 6 respectively\n"))
+	} 
+}
+```
+To break this down further, in iteration 1, `n_won` is 4, 
+so we update the values `n_of_cards[2:5]` with one copy of each.
+It's one of each because we only have one copy of card 1, 
+i.e. `n_of_card[1]` is 1 at the start of this iteration.
+
+In iteration 2, `n_won` is 2, so we update the values of `n_of_cards[3:4]`.
+But by now we have two copies of card 2, i.e. that's the value now of `n_of_card[2]`,
+so we have to add two to our tally of cards 3 and 4.
+
+And so on.
+
+Now, let's go back to our full input, run the loop on that, then get our total:
+
+```{r}
+input <- aoc_input_vector(4, 2023)
+
+n_of_card <- rep(1, length(input))
+
+for (i in seq_along(n_of_card)) {
+	n_won <- n_card_matches(input[i])
+	if (n_won > 0) {
+		cards_won <- (i+1):(i+n_won)
+		n_of_card[cards_won] <- n_of_card[cards_won] + n_of_card[i]
+	} 
+}
+
+sum(n_of_card)
+```
+
+
+##### Session info {.appendix}
+
+<details><summary>Toggle</summary>
+
+```{r}
+#| echo: false
+library(sessioninfo)
+# save the session info as an object
+pkg_session <- session_info(pkgs = "attached")
+
+# get the quarto version
+quarto_version <- system("quarto --version", intern = TRUE)
+
+# inject the quarto info
+pkg_session$platform$quarto <- paste(
+  system("quarto --version", intern = TRUE), 
+  "@", 
+  quarto::quarto_path()
+  )
+
+# print it out
+pkg_session
+```
+
+</details>
+
+
+
+
+
