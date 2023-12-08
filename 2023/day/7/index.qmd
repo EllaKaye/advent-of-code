@@ -1,0 +1,272 @@
+---
+title: "2023: Day 7"
+date: 2023-12-7
+author: 
+  - name: Ella Kaye
+categories: [base R, tidyverse, ⭐⭐]
+draft: false
+---
+
+## Setup
+
+[The original challenge](https://adventofcode.com/2023/day/7)
+
+[My data](input){target="_blank"}
+
+## Part 1
+
+```{r}
+#| echo: false
+OK <- "2023" < 3000
+# Will only evaluate next code block if an actual year has been substituted for the placeholder.
+```
+
+
+```{r}
+#| eval: !expr OK
+library(aochelpers)
+library(tidyverse)
+input <- aoc_input_data_frame(7, 2023) |> 
+  rename(hand = X1, bid = X2)
+head(input)
+```
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+Get the rank of each hand, by considering both its hand type and the card values.
+:::
+
+Ooh, this was fun! The puzzle lends itself well to a tidyverse approach, though with some helper functions that make use of base R stalwarts, such as `strsplit()`,  `rle()` and `match()`. Let's set up those helpers first.
+
+Given the string of a hand, return a vector of length 5 with the individual cards. 
+They're sorted, as this will be important for the call to `rle()` later.
+
+```{r}
+get_cards <- function(hand) {
+	strsplit(hand, "") |> 
+		unlist() |> 
+		sort()
+}
+```
+
+We can determine the hand type from the number of each card, 
+and a base R function that gets that for us really neatly is `rle()`, which gives the *r*un *l*ength *e*ncoding. 
+Let's see what that looks like for the hand `"T55J5"`:
+
+```{r}
+cards <- get_cards("T55J5")
+cards
+rle(cards)
+```
+Nice! We have 3 fives, 1 J and 1 T, a three of a kind. 
+For the hand type, we don't care about the values, 
+so the `$lengths` element of the result is what we need.
+We also don't care where in the run there are three, i.e.
+if `lengths` is `c(1, 3, 1)` that's still three of a kind. 
+If we sort the lengths, we can identify all three of a kinds as `c(1, 1, 3)`.
+If we keep that as a vector though, 
+it's tricky to write a `case_when()` statement that doesn't run into errors,
+so we concatenate the lengths into a single string, e.g. `"113"` for three of a kind.
+
+Let's take a look at the hand types, their ranks, and the associated card `rle` strings:
+
+- 1: high card: "11111"
+- 2: one pair: "1112"
+- 3: two pair: "122"
+- 4: three of a kind: "113"
+- 5: full house: "23"
+- 6: four of a kind, "14"
+- 7: five of a kind, "5"
+
+Taking into account all of the above, we can write a function that takes a hand and returns the rank of its hand type:
+
+```{r}
+get_hand_type_rank <- function(hand) {
+	cards <- get_cards(hand)
+	
+	card_rle <- rle(cards)$lengths |> 
+		sort() |> 
+		paste(collapse = "")
+	
+	case_when(
+		card_rle == "11111" ~ 1,
+		card_rle == "1112" ~ 2,
+		card_rle == "122" ~ 3,
+		card_rle == "113" ~ 4,
+		card_rle == "23" ~ 5,
+		card_rle == "14" ~ 6,
+		card_rle == "5" ~ 7
+	)
+}
+```
+
+We also need to get the rank of a card. That's a job for `match()`, 
+which returns the index of the first argument in the second argument,
+i.e. card "2" will return a value of 1, through to card "A" returning a value of 13.
+
+```{r}
+card_value <- function(card) {
+	match(card, c(2:9, "T", "J", "Q", "K", "A"))
+}
+```
+
+Now, we can use these where needed in a pipe. 
+There are some notes about what some lines are doing in the code annotations below the chunk.^[This is my first time using code annotations, so as well as Advent of Code improving my coding skills, it's also helping me level-up my Quarto game!]
+
+```{r}
+input |> 
+	rowwise() |> # <1>
+	mutate(hand_type = get_hand_type_rank(hand)) |> 
+	separate_wider_position(hand, # <2>
+	                        c(card1 = 1, # <2>
+	                          card2 = 1, # <2>
+	                          card3 = 1, # <2>
+	                          card4 = 1, # <2>
+	                          card5 = 1)) |> # <2>
+	mutate(across(starts_with("card"), card_value)) |> # <3>
+	arrange(hand_type, card1, card2, card3, card4, card5) |> # <4>
+	mutate(rank = row_number()) |> # <5>
+	mutate(winnings = bid * rank) |> 
+	summarise(total_winnings = sum(winnings)) |> 
+	pull(total_winnings)
+```
+1. We need to use `rowwise()` as `get_hand_type_rank()` isn't vectorised.
+2. Split the `hand` column into five separate columns, one for each card. `separate_wider_position()` is one of a number of functions that supercedes `separate()`. These lines feels clunky and unintuitive to me, so I wonder if there's a better way to achieve this.
+3. `across()` allows us to run the same function on multiple columns. Here, we're getting the card value of the cards in each of the five individual card columns, which will allow us to arrange the cards.
+4. Arrange the cards, first by their hand type, then by each successive card.
+5. Now that the hands are in order, their rank is simply the row number.
+
+## Part 2
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+As above, but "J" are now wildcards, with a lower value, but the power to be any card to make the hand as good as possible.
+:::
+
+It's easy to rewrite the `card_value()` function to account for the new values:
+
+```{r}
+card_value_joker <- function(card) {
+	match(card, c("J", 2:9, "T", "Q", "K", "A"))
+}
+```
+
+Now let's think about how a joker improves each hand:
+
+- 1: high card: "11111"
+  - turn the "J" into any one of the other cards, it becomes a one pair with rank 2
+- 2: one pair: "1112":
+	- if there's only 1 "J", make it the same as the pair for three of a kind, rank 4
+	- if there are 2 "J"s, they can group with one of the ones, also three of a kind, rank 4
+- 3: two pair: 1,2,2
+	- if there's 1 "J", becomes full house, rank 5
+	- if there are 2 "J"s, becomes four of a kind, rank 6
+- 4: three of a kind: 1,1,3
+	- if there's 1 "J", becomes four of a kind, rank 6
+	-  if there are 3 "J"s, also becomes four of a kind, rank 6
+- 5: full house: 2,3
+	-  either 2 or 3 "J"s, in both cases, becomes five of a kind, rank 7
+- 6: four of a kind, 1,4
+	-  either 1 or 4 "J"s, in both cases, becomes five of a kind, rank 7
+- 7: five of a kind, 5: cannot be improved, rank 7
+
+We can expand our `get_hand_type_rank()` function so that, 
+after calculating the original rank, it adjusts it as above:
+
+```{r}
+get_hand_type_rank_joker <- function(hand) {
+	cards <- get_cards(hand)
+	
+	card_rle <- rle(cards)$lengths |> 
+		sort() |> 
+		paste(collapse = "")
+	
+	# get hand rank regardless of joker
+	rank <- case_when(
+		card_rle == "11111" ~ 1,
+		card_rle == "1112" ~ 2,
+		card_rle == "122" ~ 3,
+		card_rle == "113" ~ 4,
+		card_rle == "23" ~ 5,
+		card_rle == "14" ~ 6,
+		card_rle == "5" ~ 7
+	)
+	
+	# number of jokers
+	n_j = sum(cards == "J")
+	
+	# adjust if there are jokers
+	if (n_j > 0) {
+		rank <- case_when(
+			rank == 1 ~ 2,
+			rank == 2 ~ 4,
+			rank == 3 && n_j == 1 ~ 5,
+			rank == 3 && n_j == 2 ~ 6,
+			rank == 4 ~ 6,
+			rank == 5 ~ 7,
+			rank == 6 ~ 7,
+			rank == 7 ~ 7
+		)
+	}
+	
+	rank
+}
+```
+
+Now we just run the same pipe again, but with the `joker` version of our functions:
+
+```{r}
+input |> 
+	rowwise() |> 
+	mutate(hand_type = get_hand_type_rank_joker(hand)) |> 
+	separate_wider_position(hand,
+	                        c(card1 = 1, 
+	                          card2 = 1, 
+	                          card3 = 1, 
+	                          card4 = 1, 
+	                          card5 = 1)) |> 
+	mutate(across(starts_with("card"), card_value_joker)) |> 
+	arrange(hand_type, card1, card2, card3, card4, card5) |> 
+	mutate(rank = row_number()) |> 
+	mutate(winnings = bid * rank) |> 
+	summarise(total_winnings = sum(winnings)) |> 
+	pull(total_winnings)
+```
+
+## In retrospect
+
+After publishing my solutions, I can't help but keep thinking about them and I also then read other people's code, 
+both of which mean that I realise there are things I could have done better in my code. 
+For today's puzzle, I realised that I could have used `match()` instead of `case_when()` in `get_hand_type_rank()` to get the ranks. 
+Also, `table()` would have been simpler for getting the counts of cards in each hand than `rle()`. `cards |> table() |> sort() |> paste(collapse = "")` does the trick, and we also wouldn't have needed the call to `sort()` in `get_cards()`.
+
+##### Session info {.appendix}
+
+<details><summary>Toggle</summary>
+
+```{r}
+#| echo: false
+library(sessioninfo)
+# save the session info as an object
+pkg_session <- session_info(pkgs = "attached")
+
+# get the quarto version
+quarto_version <- system("quarto --version", intern = TRUE)
+
+# inject the quarto info
+pkg_session$platform$quarto <- paste(
+  system("quarto --version", intern = TRUE), 
+  "@", 
+  quarto::quarto_path()
+  )
+
+# print it out
+pkg_session
+```
+
+</details>
+
+
+
+
+
