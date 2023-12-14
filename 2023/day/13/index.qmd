@@ -1,0 +1,223 @@
+---
+title: "2023: Day 13"
+date: 2023-12-13
+author: 
+  - name: Ella Kaye
+categories: [base R, loops, matrices, ⭐⭐]
+draft: false
+---
+
+## Setup
+
+[The original challenge](https://adventofcode.com/2023/day/13)
+
+[My data](input){target="_blank"}
+
+## Part 1
+
+```{r}
+#| echo: false
+OK <- "2023" < 3000
+# Will only evaluate next code block if an actual year has been substituted for the placeholder.
+```
+
+
+```{r}
+#| eval: !expr OK
+library(aochelpers)
+input <- aoc_input_vector(13, 2023)
+head(input)
+```
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+For each matrix in a list, find the line of reflection.
+:::
+
+```{r}
+# helper function for wrangling the input
+lines_as_matrix <- function(lines) {
+	strsplit(lines, "") |> do.call(rbind, args = _)
+}
+
+# produce a list of matrices
+matrix_list <- input |> 
+	split(cumsum(input == "")) |> # split at blank lines
+	lapply(\(x) x[x != ""]) |> # remove blank lines
+	lapply(lines_as_matrix) # turn each group of lines into a matrix
+
+# find a vertical line of reflection
+col_reflection <- function(mat) {
+	
+	nc <- ncol(mat)
+	
+	# iterate over number of columns to the left
+	# returning that number as soon as a reflection line is found
+	for (i in 1:(nc-1)) {
+		if (i <= nc/2) {
+			left_mat <- mat[, 1:i]
+			right_mat <- mat[, (2 * i):(i + 1)]
+		} else {
+			left_mat <- mat[,(2 * i - nc + 1):i]
+			right_mat <- mat[, nc:(i + 1)]
+		}
+		
+		compare <- identical(left_mat, right_mat)
+		
+		if (compare) {
+			return(i)
+		}
+	}
+	return(0) # if no vertical line of reflection
+}
+
+# find a horizontal line of reflection
+row_reflection <- function(mat) {
+	
+	nr <- nrow(mat)
+	
+	# iterate over number of rows above
+	# returning that number as soon as a reflection line is found
+	for (i in 1:(nr-1)) {
+		if (i <= nr/2) {
+			above_mat <- mat[1:i, ]
+			below_mat <- mat[(2 * i):(i + 1), ]
+		} else {
+			above_mat <- mat[(2 * i - nr + 1):i, ]
+			below_mat <- mat[nr:(i + 1), ]
+		}
+		
+		compare <- identical(above_mat, below_mat)
+		
+		if (compare) {
+			return(100 * i) # as required in puzzle description
+		}
+	}
+	return(0) # if no horizontal line of reflection
+}
+
+# for a matrix, check first for horizontal mirror
+# if there isn't one, check for vertical mirror
+reflection <- function(mat) {
+	
+	row_mirror <- row_reflection(mat)
+	
+	if (row_mirror > 0) {
+		return(row_mirror)
+	} else {
+		col_reflection(mat)
+	}
+}
+
+# find the mirror in each matrix, 
+# and the sum of the required values
+matrix_list |> 
+  sapply(reflection) |> 
+  sum()
+```
+
+I think (hope?) it's pretty clear what the above code is doing,
+especially when read alongside the puzzle description.
+There's probably a way of doing this that's a lot more concise 
+(though perhaps at the expense of readability), 
+in particular there's a lot of repetition between `col_reflections()` and `row_reflections()`, so that could probably be refactored into one function.
+
+The trickiest part of this for me was figuring out a correct way of indexing into a matrix to get the appropriate reflections on each side of the mirror line for `col_reflections()`.
+It was a job for pen and paper, 
+writing out a couple of small examples in full (one with an odd number of columns, one with an even number),
+noting the columns needed on each side of the line and staring at it until I figured out the appropriate sequences in relation to the values of `nc` and `i`.
+
+## Part 2
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+For each matrix in a list, fix one smudge, then find the line of reflection.
+:::
+
+This is very similar to above, except now, when we compare the left/right or above/below matrices, we need them to be identical in all spots but one, 
+i.e. different in exactly one place.
+So, we just need to alter the calculation of `compare` in the `col_reflection()`
+and `row_reflection()` functions accordingly, 
+then run the `reflection()` function on each matrix again.
+
+```{r}
+col_reflection <- function(mat) {
+	
+	nc <- ncol(mat)
+	
+	for (i in 1:(nc-1)) {
+		if (i <= nc/2) {
+			left_mat <- mat[, 1:i]
+			right_mat <- mat[, (2 * i):(i + 1)]
+		} else {
+			left_mat <- mat[,(2 * i - nc + 1):i]
+			right_mat <- mat[, nc:(i + 1)]
+		}
+		
+		compare <- sum(left_mat != right_mat) == 1
+		
+		if (compare) {
+			return(i)
+		}
+	}
+	return(0)
+}
+
+row_reflection <- function(mat) {
+	
+	nr <- nrow(mat)
+	
+	for (i in 1:(nr-1)) {
+		if (i <= nr/2) {
+			above_mat <- mat[1:i, ]
+			below_mat <- mat[(2 * i):(i + 1), ]
+		} else {
+			above_mat <- mat[(2 * i - nr + 1):i, ]
+			below_mat <- mat[nr:(i + 1), ]
+		}
+		
+		compare <- sum(above_mat != below_mat) == 1
+		
+		if (compare) {
+			return(100 * i)
+		}
+	}
+	return(0)
+}
+
+matrix_list |> 
+  sapply(reflection) |> 
+  sum()
+```
+
+
+##### Session info {.appendix}
+
+<details><summary>Toggle</summary>
+
+```{r}
+#| echo: false
+library(sessioninfo)
+# save the session info as an object
+pkg_session <- session_info(pkgs = "attached")
+
+# get the quarto version
+quarto_version <- system("quarto --version", intern = TRUE)
+
+# inject the quarto info
+pkg_session$platform$quarto <- paste(
+  system("quarto --version", intern = TRUE), 
+  "@", 
+  quarto::quarto_path()
+  )
+
+# print it out
+pkg_session
+```
+
+</details>
+
+
+
+
+

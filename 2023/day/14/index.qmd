@@ -1,0 +1,116 @@
+---
+title: "2023: Day 14"
+date: 2023-12-14
+author: 
+  - name: Ella Kaye
+categories: [base R, matrices, ⭐]
+draft: false
+---
+
+## Setup
+
+[The original challenge](https://adventofcode.com/2023/day/14)
+
+[My data](input){target="_blank"}
+
+## Part 1
+
+```{r}
+#| echo: false
+OK <- "2023" < 3000
+# Will only evaluate next code block if an actual year has been substituted for the placeholder.
+```
+
+
+```{r}
+#| eval: !expr OK
+library(aochelpers)
+input <- aoc_input_matrix(14, 2023)
+head(input, c(6, 6))
+```
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+'Tilt' a matrix to roll the `"O"`s until they reach a `"#"`.
+:::
+
+```{r}
+# reverse order of rows
+input_rev <- input[nrow(input):1, ]
+
+# function to tilt one column and find the load
+tilt <- function(col) {
+	sorted <- col |> 
+		factor(levels = c("#", ".", "O")) |> 
+		split(cumsum(col == "#")) |> 
+		lapply(sort) |> 
+		do.call(c, args = _) 
+	
+	which(sorted == "O") |> 
+		sum()
+}
+
+# apply to all columns and find total load
+apply(input_rev, 2, tilt) |> 
+	sum()                  
+```
+
+The puzzle talks about tilting north, 
+but since the load is equal to the number of rows from the bottom,
+in terms of associating the load with the row index, 
+it's easier to reverse the order of the rows and think about tilting the matrix south.
+
+Next, a function that will order one column.
+The strategy is to split the column at the `"#"`s,
+sort each element of the resulting list to move the `"O"`s (having converted the vector into a factor so we can sort in the desired order),  
+then rejoin the vector. 
+We can then find the indices of the round rocks, 
+and their sum in the total load for that column.
+
+Finally, apply that to each column of the matrix,
+and find the total sum.
+
+## Part 2
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+Something to do with cycles.
+:::
+
+This doesn't seem well-suited to a brute force approach.
+At the time of writing, I'm not familiar with any algorithm that would be suitable here. 
+On the R4DS Slack, Jonathan Carroll and Tan Ho have hinted about using the cycle-detection algorithm and have posted their solutions.
+At some point, I may come back to this, 
+read about the algorithm and either attempt to implement it myself, or work through their code to get a deeper understanding.
+
+
+##### Session info {.appendix}
+
+<details><summary>Toggle</summary>
+
+```{r}
+#| echo: false
+library(sessioninfo)
+# save the session info as an object
+pkg_session <- session_info(pkgs = "attached")
+
+# get the quarto version
+quarto_version <- system("quarto --version", intern = TRUE)
+
+# inject the quarto info
+pkg_session$platform$quarto <- paste(
+  system("quarto --version", intern = TRUE), 
+  "@", 
+  quarto::quarto_path()
+  )
+
+# print it out
+pkg_session
+```
+
+</details>
+
+
+
+
+

@@ -1,0 +1,121 @@
+---
+title: "2023: Day 9"
+date: 2023-12-9
+author: 
+  - name: Ella Kaye
+categories: [base R, loops, ⭐⭐]
+draft: false
+---
+
+## Setup
+
+[The original challenge](https://adventofcode.com/2023/day/9)
+
+[My data](input){target="_blank"}
+
+## Part 1
+
+```{r}
+#| echo: false
+OK <- "2023" < 3000
+# Will only evaluate next code block if an actual year has been substituted for the placeholder.
+```
+
+
+```{r}
+#| eval: !expr OK
+library(aochelpers)
+input <- aoc_input_vector(9, 2023)
+head(input)
+```
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+Predict the next value in each sequence, then find their sum.
+:::
+
+```{r}
+# function to take line of input and return a numeric sequence
+split_numeric <- function(seq) {
+	strsplit(seq, " ") |> unlist() |> as.numeric() 
+}
+
+# function to predict next value
+predict_oasis <- function(x) {
+	# prediction will be the sum of the final element 
+  # of each sequence of differences
+  prediction <- tail(x, 1)
+
+	while(!all(x == 0)) {
+		x <- diff(x)
+		prediction <- prediction + tail(x, 1)
+	}
+	prediction
+}
+
+input |> 
+	lapply(split_numeric) |> 
+	sapply(predict_oasis) |> 
+	sum()
+```
+
+I was worried when I saw the input about parsing the negative values, 
+but `as.numeric()` handled that just fine.
+
+Today was the first today that my first submitted answer was incorrect.
+My 'gotcha' turned out to be something else. 
+I was originally using the condition `while(sum(x) != 0)` for the loop.
+That works fine on the example, 
+but it turns out in my full input there's a sequence where the sum is zero 
+before all the individual elements are. 
+Switching the condition to `while(!all(x == 0))` fixed the problem.
+
+## Part 2
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+Extrapolate backwards, 
+figuring out what the first value before the sequence begins is.
+:::
+
+This is simply a case of applying `predict_oasis` to the reversed sequence.
+
+```{r}
+input |> 
+	lapply(split_numeric) |> 
+	lapply(rev) |> 
+	sapply(predict_oasis) |> 
+	sum()
+```
+
+
+##### Session info {.appendix}
+
+<details><summary>Toggle</summary>
+
+```{r}
+#| echo: false
+library(sessioninfo)
+# save the session info as an object
+pkg_session <- session_info(pkgs = "attached")
+
+# get the quarto version
+quarto_version <- system("quarto --version", intern = TRUE)
+
+# inject the quarto info
+pkg_session$platform$quarto <- paste(
+  system("quarto --version", intern = TRUE), 
+  "@", 
+  quarto::quarto_path()
+  )
+
+# print it out
+pkg_session
+```
+
+</details>
+
+
+
+
+

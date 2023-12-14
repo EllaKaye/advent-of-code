@@ -3,7 +3,7 @@ title: "2023: Day 8"
 date: 2023-12-8
 author: 
   - name: Ella Kaye
-categories: [base R, regex, ⭐⭐]
+categories: [base R, regex, loops, ⭐⭐]
 draft: false
 ---
 

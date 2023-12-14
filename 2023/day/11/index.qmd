@@ -1,0 +1,215 @@
+---
+title: "2023: Day 11"
+date: 2023-12-11
+author: 
+  - name: Ella Kaye
+categories: [base R, grids, scalability issues, ⭐⭐]
+draft: false
+---
+
+## Setup
+
+[The original challenge](https://adventofcode.com/2023/day/11)
+
+[My data](input){target="_blank"}
+
+## Part 1
+
+```{r}
+#| echo: false
+OK <- "2023" < 3000
+# Will only evaluate next code block if an actual year has been substituted for the placeholder.
+```
+
+
+```{r}
+#| eval: !expr OK
+library(aochelpers)
+input <- aoc_input_matrix(11, 2023)
+head(input, c(10,10))
+```
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+Find the shortest path (in this case, the Manhattan distance^[This is a metric in which the distance between two points is the sum of the absolute differences of their Cartesian coordinates. We can think of it like the total number of blocks you have to walk (N/S and E/W) between two intersections on the street grid of Manhattan.]) between two points, but allow for an expanding universe.
+:::
+
+Here's my first solution to Part 1. 
+It works, but it's not efficient and doesn't scale to Part 2.
+I did 'too much', i.e. literally expanded the grid, 
+then computed distances. 
+That was unnecessary (as I realised when faced with Part 2).
+But I'm writing up this solution as a reminder to myself of what *not* to do.
+In particular, don't be too literal about the puzzle description. 
+Think before I start coding if there's a more efficient approach!
+
+```{r}
+# The input is already a matrix, 
+#thanks to the `aoc_input_matrix()` function from my aochelpers package.
+
+# find the indicies of the empty rows and columns
+empty_rows <- apply(input, 1, \(x) all(x == ".")) |> which()
+empty_cols <- apply(input, 2, \(x) all(x == ".")) |> which()
+
+# approach: split the matrix where there are extra rows/cols
+# then bind in another row/col to each
+# then bind them together again
+
+# functions to split the matrix
+# e.g. of the test, we want mat[1:4, ], mat[5:8], mat[9:10, ]
+split_rows <- function(mat, indices) {
+	indices <- c(0, indices, nrow(mat))
+	lapply(1:(length(indices) - 1), 
+	       \(i) mat[(indices[i]+1):(indices[i+1]), , drop = FALSE])
+}
+
+split_cols <- function(mat, indices) {
+	indices <- c(0, indices, ncol(mat))
+	lapply(1:(length(indices) - 1), 
+	       \(i) mat[, (indices[i]+1):(indices[i+1]), drop = FALSE])
+}
+
+# functions to add another empty row/col
+add_empty_row <- function(mat) {
+	rbind(mat, ".")
+}
+
+add_empty_col <- function(mat) {
+	cbind(mat, ".")
+}
+
+# applying empty_rows and empty_cols to the last sub-matrix will leave 
+# an extra empty row and col at the ends, but that doesn't matter.
+expanded_input <- input |> 
+	split_rows(empty_rows) |> 
+	lapply(add_empty_row) |> 
+	do.call(what = rbind, args = _) |> 
+	split_cols(empty_cols) |> 
+	lapply(add_empty_col) |>
+	do.call(what = cbind, args = _)
+
+# get the coordinates of the galaxies in the expanded input
+galaxies <- which(expanded_input == "#", arr.ind = TRUE)
+
+# get a list of pairs of galaxies, by ID
+eg <- expand.grid(1:nrow(galaxies), 1:nrow(galaxies))
+pairs <- eg[eg$Var1 < eg$Var2, ] 
+colnames(pairs) <- c("galaxy1", "galaxy2")
+
+# accumulator for sum of shortest paths
+total <- 0
+
+# loop over the pair ISs, get the galaxy coords, 
+# then calculate shortest dist
+
+for (i in 1:nrow(pairs)) {
+	g1 <- pairs[i, "galaxy1"]
+	g2 <- pairs[i, "galaxy2"]
+	
+	g1_coords <- galaxies[g1, ]
+	g2_coords <- galaxies[g2, ]
+	
+	shortest_dist <- sum(abs(g1_coords - g2_coords))
+	total <- total + shortest_dist
+}
+total
+```
+
+
+## Part 2
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+Now each empty row/col expands 1000000 times.
+:::
+
+At first, I attempted to tweak my Part 1 approach, changing the `add_empty_row()` function to `add_empty_rows()` and literally adding another 999999 rows to each sub-matrix.
+If I'd stopped to think for a moment, I should have realised that attempting to create a matrix with millions of rows and columns wasn't a good idea.^[Had I learnt nothing from [Day 5](../5/index.qmd){target="_blank"}?!]
+Sure enough, when I ran it, it failed due to memory issues.
+
+A *much* better approach is to calculate the distances in the original input, 
+then adjust for the number of empty rows and empty colums crossed. 
+For example, if the expansion factor is 10, 
+for each empty row crossed, we add another 9 rows. 
+
+Here's the better appraoch, this time wrapped in a function,
+so we can check it on Part 1 as well.
+
+```{r}
+galaxy_distances <- function(input, expand = 2) {
+	
+  # find rows/cols that are all "."
+	empty_rows <- apply(input, 1, \(x) all(x == ".")) |> which()
+	empty_cols <- apply(input, 2, \(x) all(x == ".")) |> which()
+	
+	# co-ordinates of the galaxies
+	galaxies <- which(input == "#", arr.ind = TRUE)
+	
+	# all pairs of galaxies, by id 
+	eg <- expand.grid(1:nrow(galaxies), 1:nrow(galaxies))
+	pairs <- eg[eg$Var1 < eg$Var2, ] 
+	colnames(pairs) <- c("galaxy1", "galaxy2")
+	
+	# write an (anonymous) function inside the call to `apply`
+	# This runs said function on each row (MARGIN = 1) of `pairs`, 
+	# giving the distance between each pair of galaxies
+	# We can sum over them for the total distance
+	apply(pairs, 1, \(x) {
+		# x is a row of `pairs`, as a vector
+		
+	  # get the distance in the original grid
+		galaxy_pair <- galaxies[x, ] # 2x2 matrix
+		galaxy_dist <- dist(galaxy_pair, "manhattan")
+		
+		# how many empty rows/cols between galaxies?
+		g_rows <- galaxy_pair[,1]
+		empty_rows_crossed <- sum(g_rows[1]:g_rows[2] %in% empty_rows)
+		g_cols <- galaxy_pair[,2]
+		empty_cols_crossed <- sum(g_cols[1]:g_cols[2] %in% empty_cols)
+		
+		galaxy_dist + empty_rows_crossed*(expand-1) + empty_cols_crossed*(expand-1)
+	}) |> 
+		sum()
+	
+}
+galaxy_distances(input, 2) # Part 1 again
+galaxy_distances(input, 1000000) # Part 2
+```
+
+The code for my original solution to Part 1 actually runs a bit faster, 
+0.97 seconds compared to running `galaxy_distances(input, 2)`, 
+which takes 1.3 seconds. 
+However, the code in Part 1 doesn't scale,
+whereas running `galaxy_distances(input, 1000000)` takes 1.4 seconds.
+
+
+##### Session info {.appendix}
+
+<details><summary>Toggle</summary>
+
+```{r}
+#| echo: false
+library(sessioninfo)
+# save the session info as an object
+pkg_session <- session_info(pkgs = "attached")
+
+# get the quarto version
+quarto_version <- system("quarto --version", intern = TRUE)
+
+# inject the quarto info
+pkg_session$platform$quarto <- paste(
+  system("quarto --version", intern = TRUE), 
+  "@", 
+  quarto::quarto_path()
+  )
+
+# print it out
+pkg_session
+```
+
+</details>
+
+
+
+
+
