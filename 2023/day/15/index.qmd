@@ -1,0 +1,174 @@
+---
+title: "2023: Day 15"
+date: 2023-12-15
+author: 
+  - name: Ella Kaye
+categories: [base R, tidyverse, loops, ⭐⭐]
+draft: false
+---
+
+## Setup
+
+[The original challenge](https://adventofcode.com/2023/day/15)
+
+[My data](input){target="_blank"}
+
+## Part 1
+
+```{r}
+#| echo: false
+OK <- "2023" < 3000
+# Will only evaluate next code block if an actual year has been substituted for the placeholder.
+```
+
+```{r}
+#| eval: !expr OK
+library(aochelpers)
+input <- aoc_input_vector(15, 2023)
+head(input)
+```
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+Follow the given hash algorithm on for each item, then find the sum.
+:::
+
+```{r}
+# vector of instructions, separated at ","
+split_input <- strsplit(input, ",") |> unlist() 
+
+# function to find hash value of single instruction
+hash <- function(start) {
+	chars <- strsplit(start, "") |> unlist()
+	
+	# current value
+	cv <- 0
+	
+	for (char in chars) {
+		cv <- ((cv + utf8ToInt(char)) * 17) %% 256
+	}
+	cv
+}
+
+# apply across all instructions and summarise
+split_input |> 
+	sapply(hash) |> 
+	sum()
+```
+
+I happened to have come across the base R `utf8ToInt()` function last month,
+which handily converts a character into its ASCII code.
+Otherwise, this is all pretty obvious, 
+using a now-familiar strategy for Advent of Code puzzles:
+write a function that does what we want for one element of a list/vector, 
+then apply it across the whole input and summarise as required.
+
+## Part 2
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+Follow instructions to move lens around a sequence of boxes.
+:::
+
+For this part, we mix a base R approach with the tidyverse.
+We use a list for the boxes and a `for` loop to iterate over the steps,
+and a `tibble` along with tidyverse functions to keep track of what's in each box.
+
+```{r}
+#| message: false
+library(tidyverse)
+
+# separate a step, eg. "rn=1" or "cn-", into vector of length 2
+# if = label and focal length, e.g. "rn", "1"
+# if - label and empty string, e.g. "cm", ""
+sep_label_value <- function(step) {
+	step |> 
+		str_split("=|-") |> 
+		unlist() 
+} 
+
+# initiate list of boxes with empty tibbles
+# value is <chr> because `step` in loop below is a <chr> vector
+boxes <- vector("list", 256)
+for (i in seq_along(boxes)) {
+	boxes[[i]] <- tibble(label = character(), value = character())
+}
+
+# loop over instructions, moving lenses as required
+for (i in seq_along(split_input)) {
+	# separate into label and value
+	step <- sep_label_value(split_input[i])
+	names(step) <- c("label", "value") # need this for binding rows
+	lens_label <- step[1]
+	# avoid off-by-one errors when indexing into list!
+	box_index <- hash(lens_label) + 1 
+	lens_value <- step[2]
+	box <- boxes[[box_index]]
+	
+	# deal with "-" instructions
+	if (lens_value == "") {
+		# remove lens with given label
+		boxes[[box_index]] <- box |> 
+			filter(label != lens_label) 
+	} else {
+		# deal with "=" instructions
+		if (lens_label %in% box$label) {
+		  # if lens with same label, replace with new value
+			boxes[[box_index]]  <- box |> 
+				mutate(value = if_else(label == lens_label, lens_value, value))	
+		} else {
+		  # otherwise add to box
+			boxes[[box_index]]  <- bind_rows(box, step) 
+		}
+	}
+}
+
+# loop over boxes to add values needed for final calculation
+for (i in seq_along(boxes)) {
+	boxes[[i]] <- boxes[[i]] |> 
+		mutate(box_index = i) |> 
+		mutate(slot = row_number())
+}
+
+# combine boxes into one tibble, 
+# calculate focusing power for each lens and get total
+bind_rows(boxes) |> 
+	mutate(power = as.numeric(value) * box_index * slot) |> 
+	summarise(total_power = sum(power)) |> 
+	pull(total_power)
+```
+
+None of this code was difficult, 
+but it still took me a while to get my head round the puzzle instructions
+and make sure I was implementing them correctly.
+
+##### Session info {.appendix}
+
+<details><summary>Toggle</summary>
+
+```{r}
+#| echo: false
+library(sessioninfo)
+# save the session info as an object
+pkg_session <- session_info(pkgs = "attached")
+
+# get the quarto version
+quarto_version <- system("quarto --version", intern = TRUE)
+
+# inject the quarto info
+pkg_session$platform$quarto <- paste(
+  system("quarto --version", intern = TRUE), 
+  "@", 
+  quarto::quarto_path()
+  )
+
+# print it out
+pkg_session
+```
+
+</details>
+
+
+
+
+
