@@ -65,7 +65,7 @@ The strategy is to split the column at the `"#"`s,
 sort each element of the resulting list to move the `"O"`s (having converted the vector into a factor so we can sort in the desired order),  
 then rejoin the vector. 
 We can then find the indices of the round rocks, 
-and their sum in the total load for that column.
+and their sum is the load for that column.
 
 Finally, apply that to each column of the matrix,
 and find the total sum.

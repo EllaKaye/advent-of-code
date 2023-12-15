@@ -8,6 +8,13 @@ browseURL("https://adventofcode.com/2023/day/12")
 # then choose appropriate paste format from addin
 # comment out once ready to run on full input
 
+# Some suggested reading
+# Eric Wastl's tutorial (in Python)
+browseURL("https://www.reddit.com/r/adventofcode/comments/18hbbxe/2023_day_12python_stepbystep_tutorial_with_bonus/")
+
+# Rich FitzJohn's solution (also Python)
+browseURL("https://github.com/richfitz/advent-of-code/blob/main/2023/d12.py")
+
 # input <- 
 
 # Part 1 ---------------------------------------------------------------------
