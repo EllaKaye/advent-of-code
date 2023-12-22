@@ -142,6 +142,12 @@ None of this code was difficult,
 but it still took me a while to get my head round the puzzle instructions
 and make sure I was implementing them correctly.
 
+After I figured out and wrote up my solution, 
+I looked at some others on the R4DS Slack, 
+and realised that using `tibbles` and a base R/tidyverse mash-up as unnecessary.
+A list for boxes, each with a named vector for the box contents,
+works well, and keeps the solution fully base R.
+
 ##### Session info {.appendix}
 
 <details><summary>Toggle</summary>
