@@ -1,0 +1,138 @@
+---
+title: "2023: Day 21"
+date: 2023-12-21
+author: 
+  - name: Ella Kaye
+categories: [grids, graphs, tidyverse, tidygraph, adventdrob, ⭐]
+draft: false
+---
+
+## Setup
+
+[The original challenge](https://adventofcode.com/2023/day/21)
+
+[My data](input){target="_blank"}
+
+## Part 1
+
+```{r}
+#| echo: false
+OK <- "2023" < 3000
+# Will only evaluate next code block if an actual year has been substituted for the placeholder.
+```
+
+```{r}
+#| eval: !expr OK
+library(aochelpers)
+input <- aoc_input_data_frame(21, 2023)
+head(input)
+```
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+In a grid, represented as a graph, 
+find how many nodes can be reached in exactly 64 steps from a given start point.
+:::
+
+```{r}
+library(tidyverse)
+library(tidygraph)
+library(adventdrob)
+
+grid <- input |> 
+	adventdrob::grid_tidy(X1) |> 
+	mutate(node = row_number()) 
+
+grid_adj <- adventdrob::adjacent_join(grid, grid)
+
+grid_adj_connected <- grid_adj |> 
+	mutate(is_connected = if_else(
+	  value %in% c(".", "S") & value2 == ".", TRUE, FALSE))
+
+# get nodes, edges and convert into graph
+grid_nodes <- grid |> 
+	select(node)
+
+grid_edges <- grid_adj_connected |> 
+	filter(is_connected) |> 
+	select(from = node, to = node2)
+
+garden_graph <- tbl_graph(nodes = grid_nodes, 
+                          edges = grid_edges, 
+                          directed = FALSE) 
+
+# root node
+root_node <- grid |> 
+	filter(value == "S") |> 
+	pull(node)
+
+garden_depth <- garden_graph |> 
+	activate(nodes) |> 
+	mutate(depth = bfs_dist(root = root_node)) |> 
+	as_tibble() 
+
+even_depth <- seq(2, 64, by = 2)
+
+# everywhere in even number of steps, 
+# plus one more for the starting point
+garden_depth |> 
+	filter(depth %in% even_depth) |> 
+	nrow() |> 
+	sum(1)
+```
+
+Today provided an opportunity to build on what I'd learnt on [Day 3](../3/index.qmd) and [Day 10](../10/index.qmd). 
+The start of my solution today is almost identical to Day 10, using the the `grid_tidy()` and `adjacent_join()` functions in [**adventdrob**](https://github.com/dgrtwo/adventdrob) to find created a tibble of adjacent points on the grid, then, treating the grid points as nodes on a graph, some logic to determine where the edges are. 
+From there, the [**tidygraph**](https://tidygraph.data-imaginist.com) package converts the edge and node data into a graph.
+
+Prior to this year's Advent of Code, I read a some blog posts about what it takes to be successful on the global leaderboard. 
+Even though I had no intention of competing on that, 
+some of the advice was relevant to more generally solving the problems. 
+One tip was to be familiar with algorithms that come up each year, e.g. [Dijkstra's algorithm](https://en.wikipedia.org/wiki/Dijkstra's_algorithm), [breadth-first search (BFS)](https://en.wikipedia.org/wiki/Breadth-first_search) and [depth-first search (DFS)](https://en.wikipedia.org/wiki/Depth-first_search), none of which I'd come across before. 
+I'd never previously made it far enough into Advent of Code to face a puzzle that required any of those.
+It seemed that today's puzzle was a good candidate for BFS, though, and thankfully **tidygraph** has functions to implement it (coding up my own version remains a challenge for another year!) For each node that is reachable from the root node, `bfs_dist()` returns the number of steps it takes. That's exactly what we need for today. 
+The only twist is that, in this puzzle, we can turn back on ourselves, 
+so the points that we can reach after exactly 64 steps are the points we can reach in any number of even steps between 2 and 64, plus the root node itself.
+
+One note about `bfs_dist()`: I would have liked to give the node names something more descriptive, that captured the information about their position on the grid, e.g. `"1.1"` for the upper left node. That would have made it slightly easier to check that the code was working as expected. However, `bfs_dist()` requires that the value of `root` is numeric.
+
+## Part 2
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+The grid now repeats infinitely in all directions, and we need to take 26501365 steps.
+:::
+
+Not attempted (yet). My solution to Part 1 doesn't scale. 
+Maybe I'll have to implement my own BFS after all!
+
+##### Session info {.appendix}
+
+<details><summary>Toggle</summary>
+
+```{r}
+#| echo: false
+library(sessioninfo)
+# save the session info as an object
+pkg_session <- session_info(pkgs = "attached")
+
+# get the quarto version
+quarto_version <- system("quarto --version", intern = TRUE)
+
+# inject the quarto info
+pkg_session$platform$quarto <- paste(
+  system("quarto --version", intern = TRUE), 
+  "@", 
+  quarto::quarto_path()
+  )
+
+# print it out
+pkg_session
+```
+
+</details>
+
+
+
+
+
