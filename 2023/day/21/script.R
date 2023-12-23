@@ -12,7 +12,7 @@ library(tidyverse)
 library(tidygraph)
 library(adventdrob)
 
-input <- read_table(here::here("2023", "day", "21", "example-input"), col_names = "grid")
+input <- read_table(here::here("2023", "day", "21", "input"), col_names = "grid")
 grid <- input |> 
 	adventdrob::grid_tidy(grid) |> 
 	mutate(node = row_number()) 
@@ -84,3 +84,15 @@ garden_depth |>
 
 # maybe work through Jonathan Carroll's solution:
 # https://github.com/jonocarroll/advent-of-code/blob/main/2023/R/R/day21.R
+
+# Also, see https://simontoth.substack.com/p/daily-bite-of-c-advent-of-code-day-f73?r=1g4l8a&utm_campaign=post&utm_medium=web 
+# for an explantion of the maths
+
+grid |> 
+	filter(row == 66) |> 
+	View()
+
+grid |> 
+	filter(col == 66) |> 
+	View()
+
