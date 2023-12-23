@@ -1,0 +1,169 @@
+---
+title: "2023: Day 23"
+date: 2023-12-23
+author: 
+  - name: Ella Kaye
+categories: [grids, graphs, tidyverse, tidygraph, igraph, adventdrob, ⭐]
+draft: false
+---
+
+## Setup
+
+[The original challenge](https://adventofcode.com/2023/day/23)
+
+[My data](input){target="_blank"}
+
+## Part 1
+
+```{r}
+#| echo: false
+OK <- "2023" < 3000
+# Will only evaluate next code block if an actual year has been substituted for the placeholder.
+```
+
+
+```{r}
+#| eval: !expr OK
+library(aochelpers)
+input <- aoc_input_data_frame(23, 2023) 
+head(input)
+```
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+Find the longest path on a grid between given start and end points.
+:::
+
+```{r}
+library(tidyverse)
+library(adventdrob)
+library(tidygraph)
+library(igraph)
+
+grid <- input |> 
+	adventdrob::grid_tidy(X1) |> 
+	mutate(name = row_number()) 
+
+start_node <- grid |> 
+	filter(row == 1 & value == ".") |> 
+	pull(name)
+
+end_node <- grid |> 
+	filter(row == nrow(input) & value == ".") |> 
+	pull(name)
+
+grid_adj <- adventdrob::adjacent_join(grid, grid)
+
+grid_adj_connected <- grid_adj |> 
+	mutate(is_connected = case_when(
+		value == "." & value2 == "." ~ TRUE,
+		value == ">" & row2 == row & col2 == (col + 1) & value2 == "." ~ TRUE,
+		value == "<" & row2 == row & col2 == (col - 1) & value2 == "." ~ TRUE,	
+		value == "^" & row2 == (row - 1) & col2 == col & value2 == "." ~ TRUE,
+		value == "v" & row2 == (row + 1) & col2 == col & value2 == "." ~ TRUE,
+		value == "." & value2 == "v" & col2 == col & row2 == (row + 1) ~ TRUE,
+		value == "." & value2 == "^" & col2 == col & row2 == (row - 1) ~ TRUE,
+		value == "." & value2 == "<" & col2 == (col - 1) & row2 == row ~ TRUE,
+		value == "." & value2 == ">" & col2 == (col + 1) & row2 == row ~ TRUE,
+		.default = FALSE
+	))
+
+grid_nodes <- grid |> 
+	select(name)
+
+grid_edges <- grid_adj_connected |> 
+	filter(is_connected) |> 
+	select(from = name, to = name2)
+
+forest_graph <- tbl_graph(nodes = grid_nodes, edges = grid_edges) 
+all_paths_lengths <- all_simple_paths(forest_graph, start_node, end_node) |> 
+	lengths() 
+
+# need to subtract one as paths include start node,
+# whereas we want number of steps, not number of nodes in the path
+max(all_paths_lengths - 1)
+
+```
+
+The majority of the code today follows a pattern familiar from [Day 10](../10/index.qmd){target="_blank"} and [Day 21](../21/index.qmd){target="_blank"}. 
+I'd used the [**tidygraph**](https://tidygraph.data-imaginist.com/index.html) package on both those days, but today it didn't have the functionality we need. 
+With **tidygraph**, we can find the shortest path, but here we need the longest.
+We're told that we can never step on the same node twice, 
+which means that the path we're looking for is the longest *simple* path.
+The [**igraph**](https://r.igraph.org) package has a function `all_simple_paths()`,
+which returns a list, with one element per simple path between the given nodes.
+Each element is a vector containing all nodes in that path. 
+For this puzzle, we use `lengths()` to find the length of each of those vectors.
+We then need to subtract one from each, as we need the number of steps, not number of nodes. 
+The max of those gets us one gold star.
+
+
+
+## Part 2
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+As Part 1, but with many more possible paths.
+:::
+
+I had thought (i.e. optimistically hoped) it would be straightforward to adapt the code to change the slopes to regular paths, then run the same code again, something like:
+
+```{r}
+#| eval: false
+grid_no_slopes <- grid |> 
+	mutate(value = if_else(value %in% c("<", ">", "^", "v"), ".", value)) 
+
+grid_no_slopes_adj <- adventdrob::adjacent_join(grid_no_slopes, grid_no_slopes)
+
+grid_no_slopes_adj_connected <- grid_no_slopes_adj |> 
+	mutate(is_connected = if_else(value == "." & value2 == ".", TRUE, FALSE))
+
+grid_no_slopes_edges <- grid_no_slopes_adj_connected |> 
+	filter(is_connected) |> 
+	select(from = name, to = name2)
+
+forest_no_slopes_graph <- tbl_graph(nodes = grid_nodes, edges = grid_no_slopes_edges) 
+all_paths_no_slopes_lengths <- all_simple_paths(forest_no_slopes_graph, start_node, end_node) |> 
+	lengths() 
+
+max(all_paths_no_slopes_lengths - 1)
+```
+
+That ran speedily on the example input, and gave the example answer.
+However, on the full input, after the computer chugged away for a few minutes, 
+I got the error `vector memory exhausted (limit reached?)`.
+
+There must be a more efficient way, but that's beyond what I currently know how to do.
+It's becoming increasingly clear to me that to be successful in the latter stages of Advent of Code, 
+I'm going to need a much better understanding of data structures and algorithms.
+
+##### Session info {.appendix}
+
+<details><summary>Toggle</summary>
+
+```{r}
+#| echo: false
+library(sessioninfo)
+# save the session info as an object
+pkg_session <- session_info(pkgs = "attached")
+
+# get the quarto version
+quarto_version <- system("quarto --version", intern = TRUE)
+
+# inject the quarto info
+pkg_session$platform$quarto <- paste(
+  system("quarto --version", intern = TRUE), 
+  "@", 
+  quarto::quarto_path()
+  )
+
+# print it out
+pkg_session
+```
+
+</details>
+
+
+
+
+
