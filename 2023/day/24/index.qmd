@@ -1,0 +1,146 @@
+---
+title: "2023: Day 24"
+date: 2023-12-24
+author: 
+  - name: Ella Kaye
+categories: [base R, line equations, aochelpers, ⭐]
+draft: false
+---
+
+## Setup
+
+[The original challenge](https://adventofcode.com/2023/day/24)
+
+[My data](input){target="_blank"}
+
+## Part 1
+
+```{r}
+#| echo: false
+OK <- "2023" < 3000
+# Will only evaluate next code block if an actual year has been substituted for the placeholder.
+```
+
+
+```{r}
+#| eval: !expr OK
+library(aochelpers)
+input <- aoc_input_vector(24, 2023)
+head(input)
+```
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+Determine which pairs of lines intersect within a given area, in the future.
+:::
+
+```{r}
+#| cache: true
+# path is one line of the original input
+get_line <- function(path) {
+	nums <- aochelpers::extract_numbers(path)
+	
+	px <- nums[1]
+	py <- nums[2]
+	vx <- nums[4]
+	vy <- nums[5]
+	m <- vy/vx
+	b <- py - m * px
+	
+	return(list(px = px, py = py, m = m, b = b, vx = vx, vy = vy))
+}
+
+both_in_range <- function(x, 
+                          y, 
+                          min = 200000000000000, 
+                          max = 400000000000000) {
+	ifelse(x >= min && x <= max && y >= min && y <= max,
+				 TRUE,
+				 FALSE)
+} 
+
+paths_intersect <- function(path1, path2) {
+	A <- get_line(path1)
+	B <- get_line(path2)
+	
+	# parallel lines won't intersect
+	if (A$m == B$m) {
+		# print("lines are parallel")
+		return(FALSE)
+	}
+	
+	# point of intersection
+	x <- (B$b - A$b)/(A$m - B$m)
+	y <- A$m * x + A$b
+	
+	# check if in past
+	if (x > A$px && A$vx < 0 || x < A$px && A$vx > 0) {
+		#print("intersect in past for A")
+		return(FALSE)
+	}
+	
+	if (x > B$px && B$vx < 0 || x < B$px && B$vx > 0) {
+		#print("intersect in past for B")
+		return(FALSE)
+	}
+	
+	both_in_range(x, y)
+}
+
+# check all pairs
+# need stringsAsFactors = FALSE to enable comparison to get unique pairs
+all_pairs <- expand.grid(input, input, stringsAsFactors = FALSE)
+unique_pairs <- all_pairs[all_pairs$Var1 < all_pairs$Var2, ]
+
+mapply(paths_intersect, unique_pairs$Var1, unique_pairs$Var2) |> 
+	sum()
+```
+
+Now that there have been a few puzzles in which we need to extract all the numbers from a string, I've added a function, `extract_numbers()` to my [**aochelpers**](https://ellakaye.github.io/aochelpers) package to do that,
+which comes in handy today.
+
+A bit of maths gets us the equation of a line and, for any pair of lines, their point of intersection. Then, it's just a case of checking whether they intersected in the past (the part of the puzzle that caught me out for a bit) and, if not, whether they intersect in the test area.
+
+Finally we use `expand.grid()` to get all pairs of lines, then filter down to unique pairs.
+We can then apply our `paths_intersect()` function to all unique pairs, using `mapply()` since `paths_intersect()` takes more than one argument. Since `TRUE` has a numeric value of `1` and `FALSE` is `0`, the sum of the output of `paths_intersect()` on all pairs gives the number of pairs of lines which intersect, as required.
+
+## Part 2
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+Find the starting position and velocity of a rock which,
+when thrown, will hit all the hailstones.
+:::
+
+Not attempted (yet).
+
+##### Session info {.appendix}
+
+<details><summary>Toggle</summary>
+
+```{r}
+#| echo: false
+library(sessioninfo)
+# save the session info as an object
+pkg_session <- session_info(pkgs = "attached")
+
+# get the quarto version
+quarto_version <- system("quarto --version", intern = TRUE)
+
+# inject the quarto info
+pkg_session$platform$quarto <- paste(
+  system("quarto --version", intern = TRUE), 
+  "@", 
+  quarto::quarto_path()
+  )
+
+# print it out
+pkg_session
+```
+
+</details>
+
+
+
+
+
