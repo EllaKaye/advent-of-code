@@ -3,7 +3,7 @@ title: "2023: Day 24"
 date: 2023-12-24
 author: 
   - name: Ella Kaye
-categories: [base R, line equations, aochelpers, ⭐]
+categories: [base R, aochelpers, system of equations, SageMath, ⭐⭐]
 draft: false
 ---
 
@@ -112,7 +112,68 @@ Find the starting position and velocity of a rock which,
 when thrown, will hit all the hailstones.
 :::
 
-Not attempted (yet).
+We need to throw a rock so that it hits all hailstones.
+To do this, we need to set up a system of equations and solve them to find the starting position and velocity. 
+We also do not know the time of the various collisions, so that's further unknowns.
+
+I was pretty stumped on how to do this in R,
+so for the first time in many days, tried getting help from ChatGPT and Copilot, both of which were unable to come up with a solution.
+Their suggested code did not make much sense, and did not run.
+I'll be reflecting more on my experiences of using LLMs to help with Advent of Code when I write my wrap-up post. (Spoiler, they weren't a lot of help, nor fun).
+
+As the day progressed, I saw some other solutions and blogs published on this, which made it clear that some kind of solver was required, e.g. [this one in Python using z3-solver](https://github.com/nharrer/AdventOfCode/blob/main/2023/day24/solve_day24.py), or [this one](https://simontoth.substack.com/p/daily-bite-of-c-advent-of-code-day-31a?r=1g4l8a&utm_campaign=post&utm_medium=web) by Šimon Tóth, who turned to the online solver [SageMath](https://cocalc.com/features/sage?utm_source=sagemath.org&utm_medium=landingpage). 
+
+As part of my quest to learn during Advent of Code, I worked through Šimon's solution, making sure I understood what he was doing, then adapted his [SageMath code](https://cocalc.com/share/public_paths/745575e6352019a1ab86955d641ad6b3eacca4c8) to work with my input.
+
+For my own future self, here's how the system works on the example input. Let $p = (x, y, z)$ be the starting position and let $v = (vx, vy, vz)$ be the velocity of the rock. In order to set up enough equations to be able to solve for so many unknowns, we need to consider when and where it intersects with three hailstones, which might as well be the first three in the list.
+
+The position of the rock at time $t$ is $p + v*t$ (I'm being lazy here and not using vector notation). At some time, $t_1$, it intersects with hailstone 1, which has starting position $p_1 = (19, 13, 30)$ and starting velocity $v_1 = (-2, 1, -2)$. We assume we don't know $t_1$, as we won't for the actual input. At the point of intersection, we have $p + v*t_1$ = $p_1 + v_1*t_1$. We can break this down for each co-ordinate, to get three equations:
+
+$x + vx*t_1$ = $x_1 + vx_1*t_1$
+
+$y + vy*t_1$ = $y_1 + vy_1*t_1$
+
+$z + vz*t_1$ = $z_1 + vz_1*t_1$
+
+Substituting in the known values of $p_1$ and $v_1$ and rearranging slightly, we get:
+
+$x + (vx + 2)t_1 = 19$
+
+$y + (vy - 1)t_1 = 13$
+
+$z + (vz + 2)t_1 = 30$
+
+Similarly, we then set up another three equations for the rock intersecting with hailstone 2 at time $t_2$ and a final three equations for the rock intersecting with hailstone 3 and time $t_3$. 
+We then have a system of nine equations with nine unknowns, which is solveable. In SageMaths, the code looks like this:
+
+```
+x = var('x')
+y = var('y')
+z = var('z')
+vx = var('vx')
+vy = var('vy')
+vz = var('vz')
+t1 = var('t1')
+t2 = var('t2')
+t3 = var('t3')
+eq1 = 19 == x + (vx+2)*t1
+eq2 = 13 == y + (vy-1)*t1
+eq3 = 30 == z + (vz+2)*t1
+eq4 = 18 == x + (vx+1)*t2
+eq5 = 19 == y + (vy+1)*t2
+eq6 = 22 == z + (vz+2)*t2
+eq7 = 20 == x + (vx+2)*t3
+eq8 = 25 == y + (vy+2)*t3
+eq9 = 34 == z + (vz+4)*t3
+solutions = solve([eq1,eq2,eq3,eq4,eq5,eq6,eq7,eq8,eq9],x,y,z,vx,vy,vz,t1,t2,t3)
+solutions[0][0]+solutions[0][1]+solutions[0][2]
+```
+
+This gives an output of `x + y + z == 47`, as per the example.
+Substituting in the values of the first three hailstones in my actual input gives the sum as `664822352550558`.
+
+It was a shame not to be able to figure out how to do this in R, 
+but I'm glad to now know about SageMath and wonder if it may come in handy in the future.
 
 ##### Session info {.appendix}
 

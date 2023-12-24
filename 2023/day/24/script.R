@@ -72,10 +72,7 @@ both_in_range(8, 30)
 # "18, 19, 22 @ -1, -1, -2"
 # "20, 19, 15 @  1, -5, -3"
 
-paths_intersect <- function(path1, 
-														path2, 
-														min = 200000000000000, 
-														max = 400000000000000) {
+paths_intersect <- function(path1, path2) {
 	A <- get_line(path1)
 	B <- get_line(path2)
 	
@@ -100,7 +97,7 @@ paths_intersect <- function(path1,
 		return(FALSE)
 	}
 	
-	both_in_range(x, y, min = min, max = max)
+	both_in_range(x, y)
 }
 
 # parallel
@@ -140,3 +137,86 @@ mapply(paths_intersect, unique_pairs$Var1, unique_pairs$Var2) |>
 # 3.39 secs
 
 # Part 2 ---------------------------------------------------------------------
+
+get_coords <- function(stone) {
+	nums <- extract_numbers(stone)
+	p <- nums[1:3]
+	v <- nums[4:6]
+	return(list(p = p, v = v))
+}
+
+lapply(input, get_coords)
+
+get_position <- function(stone, t) {
+	nums <- extract_numbers(stone)
+	p <- nums[1:3]
+	v <- nums[4:6]
+	p + v * t
+}
+
+get_position(input[1], 5)
+get_position(input[2], 3)
+get_position(input[3], 4)
+get_position(input[4], 6)
+get_position(input[5], 1)
+# that's working
+
+example_stone <- "24, 13, 10, -3, 1, 2"
+
+lapply(1:6, \(x) get_position(example_stone, x))
+
+s1 <- get_coords(input[1]) 
+s2 <- get_coords(input[2]) 
+s3 <- get_coords(input[3]) 
+
+p1 <- s1$p # 19 13 30
+p2 <- s2$p # 18 19 22
+p3 <- s3$p # 20 25 34
+v1 <- s1$v # -2  1 -2
+v2 <- s2$v # -1 -1 -2
+v3 <- s3$v # -2 -2 -4
+
+# the p values correspond to the position of the hailstone
+# the v values correspond to the velocity of the hailstone
+# The positions indicate where the hailstones are right now (at time 0). 
+# The velocities are constant and indicate exactly how far each hailstone will move in one nanosecond.
+# For example, p = (20, 19, 15) moving with v = (1, -5, -3) will be at position (21, 14, 12) at t = 1. 
+# Write a function that takes s1, s2 and s3 as input and returns s4, 
+# where s4 is the position of the fourth hailstone at time t = 0,
+# such that the line defined by s4 will intersect the lines defined by s1, s2 and s3 at some point in the future.
+# we don't need s1, s2 and s3 to intersect, just the equation of the line that intersects all of them.
+# hint: we may need to use solve()
+# find_s4 <- function(s1, s2, s3) {
+# 	p1 <- s1$p
+# 	p2 <- s2$p
+# 	p3 <- s3$p
+# 	v1 <- s1$v
+# 	v2 <- s2$v
+# 	v3 <- s3$v
+# 	
+# 	# we need to find a point on the line defined by s4 that intersects all three lines
+# 	# we can do this by solving the system of equations
+# 	# p1 + v1 * t = p4 + v4 * t
+# 	# p2 + v2 * t = p4 + v4 * t
+# 	# p3 + v3 * t = p4 + v4 * t
+# 	# we can solve this by subtracting p4 + v4 * t from both sides
+# 	# p1 + v1 * t - p4 - v4 * t = 0
+# 	# p2 + v2 * t - p4 - v4 * t = 0
+# 	# p3 + v3 * t - p4 - v4 * t = 0
+# 	# we can then solve this system of equations using solve()
+# 	# b
+# }	
+# 
+# find_s4(s1, s2, s3)
+# 
+# 
+# Neither ChatGPT nor Copilot of much use with this.
+# Try googling!
+# The maths seems complicated:
+# https://math.stackexchange.com/questions/607348/line-intersecting-three-or-four-given-lines
+# https://www.quora.com/How-can-I-find-the-point-of-intersection-of-three-lines-simultaneously
+# A solution in Python using z3-solver: https://github.com/nharrer/AdventOfCode/blob/main/2023/day24/solve_day24.py
+
+input <- aoc_input_vector(24, 2023)
+input[1]
+
