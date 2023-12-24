@@ -3,7 +3,7 @@ title: "2023: Day 23"
 date: 2023-12-23
 author: 
   - name: Ella Kaye
-categories: [grids, graphs, tidyverse, tidygraph, igraph, adventdrob, ⭐]
+categories: [grids, graphs, tidyverse, igraph, adventdrob, ⭐]
 draft: false
 ---
 
@@ -37,7 +37,6 @@ Find the longest path on a grid between given start and end points.
 ```{r}
 library(tidyverse)
 library(adventdrob)
-library(tidygraph)
 library(igraph)
 
 grid <- input |> 
@@ -68,14 +67,13 @@ grid_adj_connected <- grid_adj |>
 		.default = FALSE
 	))
 
-grid_nodes <- grid |> 
-	select(name)
-
 grid_edges <- grid_adj_connected |> 
 	filter(is_connected) |> 
-	select(from = name, to = name2)
+	select(from = name, to = name2) |> 
+	as.matrix()
 
-forest_graph <- tbl_graph(nodes = grid_nodes, edges = grid_edges) 
+forest_graph <- graph_from_edgelist(grid_edges) 
+
 all_paths_lengths <- all_simple_paths(forest_graph, start_node, end_node) |> 
 	lengths() 
 
@@ -93,7 +91,10 @@ which means that the path we're looking for is the longest *simple* path.
 The [**igraph**](https://r.igraph.org) package has a function `all_simple_paths()`,
 which returns a list, with one element per simple path between the given nodes.
 Each element is a vector containing all nodes in that path. 
-For this puzzle, we use `lengths()` to find the length of each of those vectors.
+Since we're using **igraph** for the calculation, we're also using it to create the graph.
+We can do that from a edge list, which requires a 2-column matrix of the edges.
+For this puzzle, we use `lengths()` to find the length of each of those vectors, 
+which is a convenient shorthand for `sapply(list, length)`.
 We then need to subtract one from each, as we need the number of steps, not number of nodes. 
 The max of those gets us one gold star.
 
@@ -120,9 +121,11 @@ grid_no_slopes_adj_connected <- grid_no_slopes_adj |>
 
 grid_no_slopes_edges <- grid_no_slopes_adj_connected |> 
 	filter(is_connected) |> 
-	select(from = name, to = name2)
+	select(from = name, to = name2) |> 
+	as.matrix()
 
-forest_no_slopes_graph <- tbl_graph(nodes = grid_nodes, edges = grid_no_slopes_edges) 
+forest_no_slopes_graph <- graph_from_edgelist(grid_no_slopes_edges) 
+
 all_paths_no_slopes_lengths <- all_simple_paths(forest_no_slopes_graph, start_node, end_node) |> 
 	lengths() 
 

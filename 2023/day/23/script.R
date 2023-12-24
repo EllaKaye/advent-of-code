@@ -8,6 +8,11 @@ browseURL("https://adventofcode.com/2023/day/23")
 # then choose appropriate paste format from addin
 # comment out once ready to run on full input
 
+library(tidyverse)
+library(adventdrob)
+library(tidygraph)
+library(igraph)
+
 input <- read_table(here::here("2023", "day", "23", "example-input"), col_names = "grid")
 input
 
@@ -15,11 +20,6 @@ input
 
 
 # Part 1 ---------------------------------------------------------------------
-
-library(tidyverse)
-library(adventdrob)
-library(tidygraph)
-library(igraph)
 
 grid <- input |> 
 	adventdrob::grid_tidy(grid) |> 
@@ -56,9 +56,12 @@ grid_nodes <- grid |>
 
 grid_edges <- grid_adj_connected |> 
 	filter(is_connected) |> 
-	select(from = name, to = name2)
+	select(from = name, to = name2) |> 
+	as.matrix()
 
-forest_graph <- tbl_graph(nodes = grid_nodes, edges = grid_edges) 
+forest_graph <- graph_from_edgelist(grid_edges) 
+
+# forest_graph <- tbl_graph(nodes = grid_nodes, edges = grid_edges) 
 all_paths_lengths <- all_simple_paths(forest_graph, start_node, end_node) |> 
 	lengths() 
 
