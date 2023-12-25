@@ -1,0 +1,111 @@
+---
+title: "2023: Day 25"
+date: 2023-12-25
+author: 
+  - name: Ella Kaye
+categories: [tidyverse, graphs, igraph, ⭐]
+draft: false
+---
+
+## Setup
+
+[The original challenge](https://adventofcode.com/2023/day/25)
+
+[My data](input){target="_blank"}
+
+## Part 1
+
+```{r}
+#| echo: false
+OK <- "2023" < 3000
+# Will only evaluate next code block if an actual year has been substituted for the placeholder.
+```
+
+
+```{r}
+#| eval: !expr OK
+library(aochelpers)
+input <- aoc_input_vector(25, 2023)
+head(input)
+```
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+Given a graph, remove three edges to split the graph into two separate disconnected groups, then multiply the sizes of those groups together.
+:::
+
+Learning graph theory at 6am -- that's quite a start to a Christmas day!
+
+At first, I had no idea how to approach this problem and figured there must be some graph theory that would achieve exactly what was required, 
+preferably with an algorithm already implemented in the [**igraph**](https://r.igraph.org) package. 
+A bit of googling and I was in luck: we need a [minimum cut](https://en.wikipedia.org/wiki/Minimum_cut). 
+In this case, the minimum number of edges that can be removed to split the graph into two groups.^[The graph-theoretic term for these groups is *components* but presumably that's not being used so as not to cause confusion with the machine components in the puzzle text.] 
+This is implemented in **igraph** with the `min_cut()` function,
+which can include in its output the nodes in each group. 
+We then multiply the lengths of these vectors together for the puzzle answer. 
+Before that, the new family of `separate_*` functions in **tidyr** makes it easy to wrangle the input into a two-column data frame representing edges, which we turn to a matrix to make it acceptable for `matrix_from_edgelist()`. 
+Putting it together, the solution is concise and very fast, 
+which is just as well because it's Christmas Day and I don't have a lot of time for coding!
+
+```{r}
+library(tidyverse)
+library(igraph)
+
+input_tbl <- input |> 
+	as_tibble() |> 
+	separate_wider_delim(value, ":", names = c("from", "to")) |> 
+	separate_longer_delim(to, " ") |> 
+	filter(to != "")
+
+edgelist <- as.matrix(input_tbl)
+comp_graph <- graph_from_edgelist(edgelist, directed = FALSE)
+groups <- min_cut(comp_graph, value.only = FALSE)
+length(groups$partition1) * length(groups$partition2)
+```
+
+
+## Part 2
+
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+Have solved all other problems!
+:::
+
+So much for not much coding required to complete Day 25! 
+There's no additional puzzle for the final star -- we only need to have aquired the previous 49 stars.
+
+As of Christmas Day 2023, I have 30 gold stars -- 19 to go! 
+That's a task for another day.
+
+Happy holidays!
+
+##### Session info {.appendix}
+
+<details><summary>Toggle</summary>
+
+```{r}
+#| echo: false
+library(sessioninfo)
+# save the session info as an object
+pkg_session <- session_info(pkgs = "attached")
+
+# get the quarto version
+quarto_version <- system("quarto --version", intern = TRUE)
+
+# inject the quarto info
+pkg_session$platform$quarto <- paste(
+  system("quarto --version", intern = TRUE), 
+  "@", 
+  quarto::quarto_path()
+  )
+
+# print it out
+pkg_session
+```
+
+</details>
+
+
+
+
+
