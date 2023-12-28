@@ -72,7 +72,7 @@ Have solved all other problems!
 :::
 
 So much for not much coding required to complete Day 25! 
-There's no additional puzzle for the final star -- we only need to have aquired the previous 49 stars.
+There's no additional puzzle for the final star -- we "only" need to have acquired the previous 49 stars.
 
 As of Christmas Day 2023, I have 30 gold stars -- 19 to go! 
 That's a task for another day.
