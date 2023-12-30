@@ -161,7 +161,7 @@ Reduce(lcm, all_paths) # <4>
 1. `grep(pattern, x)` returns the indices of matches to `pattern` in `x`
 2. It's not best practice to have a function look up objects in the environment, 
 e.g. to rely on previously defined `locations` and `network` rather than pass them as arguments to the function, but I'm never going to use this function again, so I can get away with it.
-3. The answe is large, so need to increase the number of digits printed to display it all in a format that can be pasted into the Advent of Code answer submission box.
+3. The answer is large, so need to increase the number of digits printed to display it all in a format that can be pasted into the Advent of Code answer submission box.
 4, `lcm()` only takes two arguments. Using `Reduce()` successively applies it to each element is `all_paths`.
 
 It's not obviously from the text for Part 2 that the lowest common multiple of the part lengths is what we need. 
