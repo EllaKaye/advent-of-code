@@ -138,7 +138,7 @@ steps_from_start <- function(start_loc) { # <2>
 
 all_paths <- sapply(start_nodes, steps_from_start)
 
-# function for greatest common denominator
+# function for greatest common divisor
 # applies Euclid's algorithm
 gcd <- function(x, y) {
 	while (y != 0) {
