@@ -17,13 +17,9 @@ int main(void) {
 	fgets(input_line, 7001, fptr); 
 		
 	for (int i = 0; i < 7001; i++) {
-		//printf("%d\n", input_line[i]); 
-		//printf("%d\n", i); 
-		// 40 is the ASCII code of (
-		if (input_line[i] == 40) {
+		if (input_line[i] == '(') {
 			total++;
-		// 41 is ASCII code of )
-		} else if (input_line[i] == 41) {
+		} else if (input_line[i] == ')') {
 			total--;
 		} else {
 			break;
