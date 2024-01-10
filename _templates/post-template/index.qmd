@@ -21,6 +21,12 @@ OK <- "YYYY" < 3000
 # Will only evaluate next code block if an actual year has been substituted for the placeholder.
 ```
 
+::: {.callout-note collapse="false" icon="false"}
+## The crux of the puzzle
+
+:::
+
+### R
 
 ```{r}
 #| eval: !expr OK
@@ -30,10 +36,7 @@ input <- aoc_input_vector(DD, YYYY)
 head(input)
 ```
 
-::: {.callout-note collapse="false" icon="false"}
-## The crux of the puzzle
-
-:::
+### C
 
 ## Part 2
 
@@ -41,6 +44,10 @@ head(input)
 ## The crux of the puzzle
 
 :::
+
+### R
+
+### C
 
 
 ##### Session info {.appendix}
