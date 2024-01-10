@@ -17,7 +17,7 @@ int main(void) {
 	fgets(input_line, 7001, fptr); 
 	
 	int i = 0;
-	for (i = 0; i <= 7000; i++) {
+	for (i = 0; i < 7001; i++) {
 		//printf("%d\n", input_line[i]); 
 		//printf("%d\n", i); 
 		// 40 is ASCII code of (

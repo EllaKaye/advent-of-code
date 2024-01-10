@@ -16,7 +16,7 @@ int main(void) {
 	// Read the content and store it inside input_line
 	fgets(input_line, 7001, fptr); 
 		
-	for (int i = 0; i <= 7000; i++) {
+	for (int i = 0; i < 7001; i++) {
 		//printf("%d\n", input_line[i]); 
 		//printf("%d\n", i); 
 		// 40 is the ASCII code of (
