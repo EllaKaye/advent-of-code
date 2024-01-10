@@ -22,10 +22,10 @@ int main(void) {
 		//printf("%d\n", i); 
 		// 40 is ASCII code of (
 		if (input_line[i] == 40) {
-			total += 1;
+			total++;
 			// 41 is ASCII code of )
 		} else if (input_line[i] == 41) {
-			total -= 1;
+			total--;
 		} else {
 			break;
 		}
