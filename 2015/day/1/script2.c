@@ -2,37 +2,42 @@
 
 int main(void) {
 	
-	FILE *fptr;
+	FILE *fptr = fopen("input", "r");
+	if (fptr == NULL)
+	{
+		perror("Could not open file");
+		return 1;
+	}
 	
-	// Open a file in read mode
-	fptr = fopen("input", "r");
-	
-	// Store the content of the file
-	char input_line[7001];
-	
-	// Set up accumulator
+	char c;
+	int i = 0; // to keep track of position
 	int total = 0;
 	
-	// Read the content and store it inside input_line
-	fgets(input_line, 7001, fptr); 
-	
-	int i = 0;
-	for (i = 0; i < 7001; i++) {
-		if (input_line[i] == '(') {
+	while((c = fgetc(fptr)) != EOF) 
+	{
+		if (c == '(') 
+		{
 			total++;
-		} else if (input_line[i] == ')') {
+		} 
+		else if (c == ')') 
+		{
 			total--;
-		} else {
+		} 
+		else 
+		{
+			printf("Not a valid char\n");
 			break;
 		}
+		
+		i++;
 		
 		if (total < 0) {
 			break;
 		}
 	}
-	
+
 	// Close the file
 	fclose(fptr);
 	
-	printf("%d\n", i+1);
+	printf("%d\n", i);
 }
