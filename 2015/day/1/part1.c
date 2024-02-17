@@ -7,11 +7,11 @@ int main(void) {
 		perror("Could not open file");
 		return 1;
 	}
-	
-	char c;
+
 	int total = 0;
 	
 	// Read the file, char by char
+	char c;
 	while((c = fgetc(fptr)) != EOF) 
 	{
 		if (c == '(') 

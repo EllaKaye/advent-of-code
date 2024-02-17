@@ -9,10 +9,10 @@ int main(void) {
 		return 1;
 	}
 	
-	char c;
 	int i = 0; // to keep track of position
 	int total = 0;
 	
+	char c;
 	while((c = fgetc(fptr)) != EOF) 
 	{
 		if (c == '(') 
