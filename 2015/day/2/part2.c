@@ -1,6 +1,5 @@
 // template that's likely to be close to what's required for an AoC puzzle
 #include <stdio.h>
-#include <string.h>
 
 // default input file
 #define INPUT_FILE "input"
@@ -13,7 +12,7 @@ int main(int argc, char *argv[]) {
 	// check usage
 	if (argc !=1 && argc !=2)
 	{
-		printf("Usage: ./part1 [INPUT_FILE]\n");
+		printf("Usage: ./part2 [INPUT_FILE]\n");
 		return 1;		
 	}
 	

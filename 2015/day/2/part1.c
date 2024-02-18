@@ -1,6 +1,5 @@
 // template that's likely to be close to what's required for an AoC puzzle
 #include <stdio.h>
-#include <string.h>
 
 // default input file
 #define INPUT_FILE "input"
