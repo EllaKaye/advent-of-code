@@ -6,4 +6,6 @@ BINS = $(SRCS:.c=)
 
 %: %.c
 	$(CC) $(CFLAGS) -o $@ $<
+	
+clean:
 	rm -rf $(addsuffix .dSYM, $(BINS))
