@@ -26,4 +26,4 @@ Option 3: (BEST)
 
 -   `cd` into directory of `YYYY/day/DD` that we're working on.
 
--   run `makeaoc SCRIPT` for some `SCRIPT.c` to compile, (or `makeaoc SCRIPT INPUT` for some other input file)
+-   run `makeaoc SCRIPT` for some `SCRIPT.c` in the working directory to compile, (or `makeaoc SCRIPT INPUT` for some other input file)

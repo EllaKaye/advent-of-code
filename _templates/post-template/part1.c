@@ -1,17 +1,17 @@
 // template that's likely to be close to what's required for an AoC puzzle
 #include <stdio.h>
 #include <string.h>
-#define LINE_LENGTH 50 //including `\0`
+#define LINE_LENGTH 10 //including '\0'
 
 // default input file
 #define INPUT_FILE "input"
 
-int process_line(char input[]);
+int process_line(const char line[]);
 
 int main(int argc, char *argv[]) {
 	
 	// check usage
-	if (argc !=1 && argc !=2)
+	if (argc != 1 && argc != 2)
 	{
 		printf("Usage: ./part1 [INPUT_FILE]\n");
 		return 1;		
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
 	printf("%d\n", total);
 }
 
-int process_line(char line[]) {
+int process_line(const char line[]) {
 	
 	int value = 0;
 	
