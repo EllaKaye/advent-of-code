@@ -1,7 +1,7 @@
 // template that's likely to be close to what's required for an AoC puzzle
 #include <stdio.h>
 #include <string.h>
-#define LINE_LENGTH 10 //including '\0'
+#define LINE_LENGTH 50 //including '\0'
 
 // default input file
 #define INPUT_FILE "input"
