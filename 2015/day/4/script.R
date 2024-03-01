@@ -81,6 +81,7 @@ system.time(
 )
 
 # 9962624, but it takes 251.6 seconds (over 4 minutes)
+
 system.time(
 	{
 		inputs <- paste0(input, 1:1e7) 
@@ -108,3 +109,5 @@ matching_keys[1] # only one
 # comparing with C approach
 
 paste0(input, 1:4) |> md5()
+
+
