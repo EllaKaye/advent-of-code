@@ -155,8 +155,12 @@ for (i in can_evaluate_indices) {
 	bitwShiftL(a, n) %% 2^16
 }
 
+# FINAL SOLUTION
+system.time(
+	{
 input <- aochelpers::aoc_input_vector(7, 2015) # uncomment at end, once correct on test input
 
+# could use named vector to str_replace_all here too
 instructions <- input |> 
 	gsub("AND", "%AND%", x = _) |> 
 	gsub("OR", "%OR%", x = _) |> 
@@ -168,31 +172,61 @@ split_instructions <- instructions |> strsplit(" -> ")
 operations <- sapply(split_instructions, "[", 1)
 wires <- sapply(split_instructions, "[", 2)
 
-#while (is.null(get0("a")))
-while (is.null(get0("a"))) {
-	
-	# evaluate instructions that can be evaluated
-	can_evaluate_indices <- which(!grepl("[a-z]", operations)) 
-	system.time(
-		{
-			to_eval <- instructions[can_evaluate_indices]
-			eval(str2expression(to_eval))			
-			to_eval <- instructions[can_evaluate_indices]
-			eval(str2expression(to_eval))
+		`%AND%` <- function(a, b) {
+			bitwAnd(a, b) %% 2^16
 		}
-	)
+		
+		`%OR%` <- function(a, b) {
+			bitwOr(a, b) %% 2^16
+		}
+		
+		`%NOT%` <- function(tmp, a) {
+			bitwNot(a) %% 2^16
+		}
+		
+		`%RSHIFT%` <- function(a, n) {
+			bitwShiftR(a, n) %% 2^16
+		}
+		
+		`%LSHIFT%` <- function(a, n) {
+			bitwShiftL(a, n) %% 2^16
+		}
+		
+		
+repeat {
 	
-	# replace assigned variables with their values
-	evaluated_values <- operations[can_evaluate_indices]
-	names(evaluated_values) <- paste0("\\b", wires[can_evaluate_indices], "\\b")
-	operations <- stringr::str_replace_all(operations, evaluated_values)
+	# find wires that have already been assigned, i.e. operations are numbers
+	assigned_indices <- which(str_detect(operations, "^\\d+$"))
+	assigned_values <- operations[assigned_indices]
+	assigned_wires <- wires[assigned_indices]
+	names(assigned_values) <- paste0("\\b", assigned_wires, "\\b")
+	
+	# break if we've assigned "a"
+	if ("a" %in% assigned_wires) {
+		print(as.numeric(assigned_values["\\ba\\b"])) # 16076
+		break
+	}
+	
+	# replace other occurrences of assigned wires with their values
+	# neat trick with passing a named vector to str_replace_all
+	operations <- stringr::str_replace_all(operations, assigned_values)
 	
 	# remove already evaluated instructions
-	#instructions <- instructions[-can_evaluate_indices]
-	#operations <- operations[-can_evaluate_indices]
-	#wires <- wires[-can_evaluate_indices]
+	operations <- operations[-assigned_indices]
+	wires <- wires[-assigned_indices]
+	
+	# find operations that can now be evaluated
+	can_evaluate_indices <- which(!grepl("[a-z]", operations)) 
+	
+	# evaluate those operations and replace with the new values
+	operations[can_evaluate_indices] <- operations[can_evaluate_indices] |> 
+		sapply(str2expression) |> 
+		sapply(eval) |> 
+		as.character()
 }
-
+		
+	}
+)
 # testing 
 
 12 %LSHIFT% 1
@@ -231,85 +265,78 @@ split_instructions
 operations
 wires
 
-# Emil's solution
-library(magrittr)
-library(stringr)
-
-input <- aochelpers::aoc_input_vector(7, 2015)
-
-int_2_16 <- function(x) {
-	as.logical(intToBits(x)[1:16])
-}
-
-int_2_16_rev <- function(x) {
-	sum(2 ^ (0:15) * x)
-}
-
-`%AND%` <- function(x, y) {
-	int_2_16_rev(int_2_16(x) & int_2_16(y))
-}
-
-`%OR%` <- function(x, y) {
-	int_2_16_rev(int_2_16(x) | int_2_16(y))
-}
-
-`%LSHIFT%` <- function(x, y) {
-	int_2_16_rev(c(rep(FALSE, y), int_2_16(x)[seq(1, 16 - y)]))
-}
-
-`%RSHIFT%` <- function(x, y) {
-	int_2_16_rev(c(int_2_16(x)[seq(y + 1, 16)], rep(FALSE, y)))
-}
-
-`%NOT%` <- function(temp, x) {
-	int_2_16_rev(!int_2_16(x))
-}
-
-eval_fun <- function(x) {
-	as.character(eval(parse(text = x)))
-}
-
-instructions <- strsplit(input, " -> ")
-
-lhs <- purrr::map_chr(instructions, ~.x[1]) %>%
-	str_replace_all(
-		c(
-			"OR" = "%OR%",
-			"AND" = "%AND%",
-			"RSHIFT" = "%RSHIFT%",
-			"LSHIFT" = "%LSHIFT%",
-			"NOT" = "1 %NOT%"
-		)
-	) %>%
-	paste0("( ", ., " )")
-
-lhs[which(str_detect(lhs, "^\\( [0-9]* \\)$"))] <- str_extract(
-	lhs[which(str_detect(lhs, "^\\( [0-9]* \\)$"))],
-	"[0-9]+"
-)
-lhs
-
-rhs <- purrr::map_chr(instructions, ~.x[2])
-iters <- 0
-repeat {
-	numbers_ind <- which(str_detect(lhs, "^[0-9]*$"))
-	
-	if (length(numbers_ind) == length(lhs)) break
-	
-	replacement <- str_extract(lhs[numbers_ind], "[0-9]+")
-	names(replacement) <- paste0(" ", rhs[numbers_ind], " ")
-	# after first round, this is a named vector, replacement = c(b = 19138, c = 0)
-	
-	lhs <- lhs %>%
-		str_replace_all(replacement)
-	
-	can_evaluate <- !lhs %>% str_detect("[a-z]+")
-	
-	lhs[can_evaluate] <- purrr::map_chr(lhs[can_evaluate], eval_fun)
-	iters <- iters + 1
-}
-
-# after first round, can_evaluate is 55  90  93 122 275 282 284
-
-lhs[rhs == "a"]
 # Part 2 ---------------------------------------------------------------------
+
+system.time(
+	{
+		input <- aochelpers::aoc_input_vector(7, 2015) # uncomment at end, once correct on test input
+		
+		instructions <- input |> 
+			gsub("AND", "%AND%", x = _) |> 
+			gsub("OR", "%OR%", x = _) |> 
+			gsub("NOT", "X %NOT%", x = _) |> 
+			gsub("RSHIFT", "%RSHIFT%", x = _) |> 
+			gsub("LSHIFT", "%LSHIFT%", x = _) 
+		
+		split_instructions <- instructions |> strsplit(" -> ")
+		operations <- sapply(split_instructions, "[", 1)
+		wires <- sapply(split_instructions, "[", 2)
+		
+		which(wires == "b")
+		operations[which(wires == "b")] <- "16076" 
+		
+		`%AND%` <- function(a, b) {
+			bitwAnd(a, b) %% 2^16
+		}
+		
+		`%OR%` <- function(a, b) {
+			bitwOr(a, b) %% 2^16
+		}
+		
+		`%NOT%` <- function(tmp, a) {
+			bitwNot(a) %% 2^16
+		}
+		
+		`%RSHIFT%` <- function(a, n) {
+			bitwShiftR(a, n) %% 2^16
+		}
+		
+		`%LSHIFT%` <- function(a, n) {
+			bitwShiftL(a, n) %% 2^16
+		}
+		
+		repeat {
+			
+			# find wires that have already been assigned, i.e. operations are numbers
+			assigned_indices <- which(str_detect(operations, "^\\d+$"))
+			assigned_values <- operations[assigned_indices]
+			assigned_wires <- wires[assigned_indices]
+			names(assigned_values) <- paste0("\\b", assigned_wires, "\\b")
+			
+			# break if we've assigned "a"
+			if ("a" %in% assigned_wires) {
+				print(as.numeric(assigned_values["\\ba\\b"])) 
+				break
+			}
+			
+			# replace other occurrences of assigned wires with their values
+			# neat trick with passing a named vector to str_replace_all
+			operations <- stringr::str_replace_all(operations, assigned_values)
+			
+			# remove already evaluated instructions
+			operations <- operations[-assigned_indices]
+			wires <- wires[-assigned_indices]
+			
+			# find operations that can now be evaluated
+			can_evaluate_indices <- which(!grepl("[a-z]", operations)) 
+			
+			# evaluate those operations and replace with the new values
+			operations[can_evaluate_indices] <- operations[can_evaluate_indices] |> 
+				sapply(str2expression) |> 
+				sapply(eval) |> 
+				as.character()
+		}
+		
+	}
+)
+
