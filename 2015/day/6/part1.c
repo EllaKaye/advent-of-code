@@ -1,6 +1,7 @@
 // template that's likely to be close to what's required for an AoC puzzle
 #include <stdio.h>
 #include <string.h>
+#define SIZE 1000
 // #define LINE_LENGTH 34 //including 'n' and '\0'
 
 // default input file
@@ -37,19 +38,19 @@ int main(int argc, char *argv[]) {
 		// read in chars individually with fgetc
 		// read in formatted string with fscanf
 	char action[11];
-	/*
 	int x1;
 	int y1;
 	int x2;
 	int y2;
-	 */
 
-	//while (fscanf(fptr, "%[^0-9]9s%d%*c%d%*[^0-9]s%d%*c%d", action, &x1, &y1, &x2, &y2) == 5) 
-	while (fscanf(fptr, "%[^0-9]10s", action)) 
+	while (fscanf(fptr, "%[^0-9]%d,%d through %d,%d\n", action, &x1, &y1, &x2, &y2) == 5) 
 	{
+		// trim white space at start and end of action
+		
 		// int value = process_line(input_line);
 		//printf("Action: %s, %d, %d, %d, %d\n", action, x1, y1, x2, y2);
-		printf("Action: %s\n", action);
+		//fscanf(fptr, "%[^0-9]%d,%d through %d,%d\n", action, &x1, &y1, &x2, &y2);
+		printf("Action: %s, x1: %d, y1: %d, x2: %d, y2: %d\n", action, x1, y1, x2, y2);
 		
 		// WHATEVER WE NEED HERE
 		//total += value;
