@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
 	int length;
 	int width;
 	int depth;
-	while (fscanf(fptr, "%d%*c%d%*c%d", &length, &width, &depth) == 3) 
+	while (fscanf(fptr, "%dx%dx%d", &length, &width, &depth) == 3) 
 	{
 		total += process_line(length, width, depth);
 	}
