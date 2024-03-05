@@ -45,16 +45,12 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	
-	// Read the content and store it inside input_line buffer
-	// ALTERNATIVES: 
-		// read in chars individually with fgetc
-		// read in formatted string with fscanf
+	// Read the content and store it in variables
 	char action[11];
 	int x1;
 	int y1;
 	int x2;
 	int y2;
-
 
 	while (fscanf(fptr, "%[^0-9]%d,%d through %d,%d\n", action, &x1, &y1, &x2, &y2) == 5) 
 	{
@@ -113,6 +109,12 @@ int main(int argc, char *argv[]) {
 	
 	// close the file
 	fclose(fptr);
+	
+	// Free dynamically allocated memory
+	for (int i = 0; i < SIZE; i++) {
+		free(lights[i]);
+	}
+	free(lights);
 	
 	// print out the answer
 	printf("%d\n", total);
