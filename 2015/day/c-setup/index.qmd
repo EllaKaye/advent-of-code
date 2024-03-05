@@ -95,20 +95,7 @@ I first learnt C through weeks 1-5 of [CS50](https://cs50.harvard.edu/x/2024). O
 - alias
 - libraries
 
-## homebrew
+## homebrew and linking (.zshrc)
 
 ## leaks
 
-## LLMs
-
-- No Copilot
-- How I'm using ChatGPT
-
-## Resources
-
-- CS50
-	- https://manual.cs50.io
-- Books 
-	- C Programming (K. N. King)
-	- Modern C
-	- 21st Century C

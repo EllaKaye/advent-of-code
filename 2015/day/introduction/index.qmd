@@ -7,6 +7,20 @@ code-tools: true
 
 It's February 2024.^[For the posts for each day's challenge, I'm sticking with the publish date as the day the challenge was originally published, rather than the date of writing up my solution, so this introduction post is arbitrarily dated before December 2015 to keep the posts in order.] In my [conclusion post for 2023](../../../2023/day/conclusion/index.qmd), I stated my intention to learn C this year by working through weeks 1-5 of the [CS50](https://cs50.harvard.edu/x/2024) material and to put into practice what I learnt by working through the 2015 run of Advent of Code in both R and C. 
 
-In my 2023 summary, I made some observations on my experiences of using LLMs for Advent of Code. Along similar lines, I want to state at the offset for the 2015 challenges that I will not be using Copilot -- it's no fun when I want the satisfaction of solving these puzzles myself. 
+In my 2023 summary, I made some observations on my experiences of using LLMs for Advent of Code. Along similar lines, I want to state at the offset for the 2015 challenges that I will not be using Copilot -- it's no fun when I want the satisfaction of solving these puzzles myself.
+
+## LLMs
+
+- No Copilot
+- How I'm using ChatGPT
+
+## Resources
+
+- CS50
+	- https://manual.cs50.io
+- Books 
+	- C Programming (K. N. King)
+	- Modern C
+	- 21st Century C
 
 That said, in putting together my [C setup](../c-setup/index.qmd), and when working on the first few challenges, I have made extensive use of ChatGPT and found it, for the most part, helpful....
