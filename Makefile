@@ -1,6 +1,7 @@
 CC = clang
-CFLAGS = -Wall -Wextra -std=c11 -pedantic # -g
-LIBS = $(filter-out $@,$(MAKECMDGOALS))
+CFLAGS = -Wall -Wextra -std=c11 -pedantic $(shell pkg-config --cflags glib-2.0)# -g
+# LIBS = $(filter-out $@,$(MAKECMDGOALS))
+LIBS = $(shell pkg-config --libs glib-2.0)
 
 SRCS = $(wildcard *.c)
 BINS = $(SRCS:.c=)
