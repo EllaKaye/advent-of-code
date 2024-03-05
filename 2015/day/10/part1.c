@@ -3,7 +3,7 @@
 #include <string.h>
 #include <glib-2.0/glib.h>
 
-void look_say(GSList *list);
+void look_say(GSList **look, GSList **say);
 void print_list(GSList *list);
 
 // default input file
@@ -44,72 +44,76 @@ int main(int argc, char *argv[]) {
 			look = g_slist_prepend(look, GINT_TO_POINTER(g_ascii_digit_value(c)));
 	 }
 	 look = g_slist_reverse(look);
+	
 	// close the file
 	fclose(fptr);
+	
+	g_print("Before function:\n");
+	print_list(look);
+	g_print("\n");
+	look_say(&look, &say);
+	g_print("After function:\n");
+	print_list(say);
+	g_print("\n");
+	
+	// print out the answer
+	printf("%d\n", g_slist_length(say));
+	
+	// free lists
+	g_slist_free(look);
+	g_slist_free(say);
+	
+	// N.B. MEMORY LEAKS, PROBABLY FROM look_say function.
+	// Can we rewrite this as a void function that uses pointers?
+}
+
+// given a pointer to `look` as list1 and pointer to say as `*say`
+// calculates `say`
+// then sets `look` to be `say`, in readiness for next iteration
+void look_say(GSList **look, GSList **say)
+{
+	// Clear the existing content of say
+	g_slist_free_full(*say, g_free);
+	*say = NULL;
 	
 	// iterate over look:
 	int length = 1; // to store length of a run in the rle
 	int current;
 	int next;
 	
-	for (GSList *iter = look; iter->next != NULL; iter = g_slist_next(iter)) {
+	for (GSList *iter = *look; iter->next != NULL; iter = g_slist_next(iter)) {
 		
 		current = GPOINTER_TO_INT(iter->data);
 		next = GPOINTER_TO_INT(g_slist_next(iter)->data);
 		
-	//	g_print("current: %d, next: %d\n", current, next);
-		if (current == next) {
+		if (current == next) 
+		{
 			length++;
-			// g_print("Same value\n");
 		} 
 		else 
 		{
 			// prepend value and length to say and reset
-			say = g_slist_prepend(say, GINT_TO_POINTER(length));
-			say = g_slist_prepend(say, GINT_TO_POINTER(current));
+			*say = g_slist_prepend(*say, GINT_TO_POINTER(length));
+			*say = g_slist_prepend(*say, GINT_TO_POINTER(current));
 			length = 1;
 		}
-		// g_print("say: ");
-		// print_list(say);
-		// g_print("\n");
 	}
 	
 	// after loop, deal with final value in the list
 	if (current == next) 
 	{
-		say = g_slist_prepend(say, GINT_TO_POINTER(length));
-		say = g_slist_prepend(say, GINT_TO_POINTER(current));
+		*say = g_slist_prepend(*say, GINT_TO_POINTER(length));
+		*say = g_slist_prepend(*say, GINT_TO_POINTER(current));
 	}
 	else // next != current
 	{
 		// length one of the final value
-		say = g_slist_prepend(say, GINT_TO_POINTER(1));
-		say = g_slist_prepend(say, GINT_TO_POINTER(next));
+		*say = g_slist_prepend(*say, GINT_TO_POINTER(1));
+		*say = g_slist_prepend(*say, GINT_TO_POINTER(next));
 	}
 	
-	//
-	g_print("After loop: \n");
-	say = g_slist_reverse(say);
-	g_print("look: ");
-	print_list(look);
-	g_print("\n");
-	g_print("say: ");
-	print_list(say);
-	g_print("\n");
-	
-	
-	// free lists
-	
-	// print out the answer
-	// printf("%d\n", total);
-}
-
-// given a pointer to `look` as an input
-// calculates `say`
-// then sets `look` to be `say`, in readiness for next iteration
-void look_say(GSList *list)
-{
-	
+	// reserve say
+	*say = g_slist_reverse(*say);
 }
 
 void print_list(GSList *list)
