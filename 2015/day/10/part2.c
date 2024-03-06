@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
 	// check usage
 	if (argc != 1 && argc != 2)
 	{
-		printf("Usage: ./part1 [INPUT_FILE]\n");
+		printf("Usage: ./part2 [INPUT_FILE]\n");
 		return 1;		
 	}
 	
@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
 	fclose(fptr);
 	
 	// iteratate
-	for (int i = 0; i < 40; i++)
+	for (int i = 0; i < 50; i++)
 	{
 		say = NULL;
 		//g_print("i: %d, list: ", i);
