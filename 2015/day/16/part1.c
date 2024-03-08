@@ -1,12 +1,21 @@
 // template that's likely to be close to what's required for an AoC puzzle
 #include <stdio.h>
 #include <string.h>
-#define LINE_LENGTH 50 //including '\0'
+#define LINE_LENGTH 52 //including '\n' and '\0'
+#define N_PROPERTIES 10
+#define N_SUES 500
+
+// global variables
+int sues[N_SUES][N_PROPERTIES]; // -1 for NA
+int possible_sues_i[N_SUES]; // for index of sues still in contention
+int possible_sues_n = N_SUES; // the number of possible sues
+
+// function prototypes
+int get_property_index(char *property);
+void print_sues_row(int row);
 
 // default input file
 #define INPUT_FILE "input"
-
-int process_line(const char line[]);
 
 int main(int argc, char *argv[]) {
 	
@@ -28,36 +37,88 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 	
-	// Set up accumulator
-	// OR WHATEVER ELSE IS REQUIRED FOR THE PUZZLE
-	int total = 0;
-	
-	// Read the content and store it inside input_line buffer
-	// ALTERNATIVES: 
-		// read in chars individually with fgetc
-		// read in formatted string with fscanf
-	char input_line[LINE_LENGTH];
-	while (fgets(input_line, LINE_LENGTH, fptr)) 
+	// initialise arrays
+	for (int i = 0; i < N_SUES; i++)
 	{
-		int value = process_line(input_line);
-		
-		// WHATEVER WE NEED HERE
-		total += value;
+		for (int j = 0; j < N_PROPERTIES; j++)
+		{
+			sues[i][j] = -1;
+		}
 	}
+	
+	for (int i = 0; i < N_SUES; i++)
+	{
+		possible_sues_i[i] = i;
+	}
+	
+	// Read the file contents and store parsed results into `sues` matrix
+	char line[LINE_LENGTH];
+	char *token;
+	char property[13];
+	int value;
+	int row = 0;
+	int col;
+	
+	while (fgets(line, LINE_LENGTH, fptr)) 
+	{
+		token = strtok(line, ":"); // get past "Sue n:"
+		//printf("%s\n", token);
+		token = strtok(NULL, ",");
+		
+		while(token != NULL)
+		{
+			//printf("%s\n", token);
+			//sscanf(token, "%s: %d", property, &value);
+			sscanf(token, " %12[^:] %*c %d", property, &value);
+			//printf("%s %d\n", property, value);		
+			token = strtok(NULL, ",");
+			
+			col = get_property_index(property);
+			if (col == N_PROPERTIES)
+			{
+				printf("invalid property!\n");
+				return 1;
+			}
+			
+			// update `sues`
+			sues[row][col] = value;
+		}
+		
+		row++;
+	}
+	
+	print_sues_row(0);
+	print_sues_row(N_SUES - 1);
 	
 	// close the file
 	fclose(fptr);
 	
 	// print out the answer
-	printf("%d\n", total);
+	printf("%d\n", possible_sues_i[0] + 1);
 }
 
-int process_line(const char line[]) {
+// function to get col index of a property
+int get_property_index(char *property)
+{
+	char *properties[N_PROPERTIES] = {"children", "cars", "vizslas", "akitas", "perfumes",
+                        "pomeranians", "goldfish", "cats", "trees", "samoyeds"};
+	for (int i = 0; i < N_PROPERTIES; i++)
+	{
+		if (strcmp(property, properties[i]) == 0)
+		{
+			return i;
+		}
+	}
 	
-	int value = 0;
-	
-	// PROCESS THE LINE!
-	printf("%s\n", line);
-	
-	return value;
+	printf("property not found!\n");
+	return N_PROPERTIES;
+}
+
+void print_sues_row(int row)
+{
+	for (int j = 0; j < N_PROPERTIES; j++)
+	{
+		printf("%d ", sues[row][j]);
+	}
+	printf("\n");
 }
