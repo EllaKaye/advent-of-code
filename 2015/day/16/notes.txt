@@ -1,0 +1,16 @@
+Strategy
+
+Max nchar = 50 (so will ned input_line 52)
+
+#define N_PROPERTIES 10
+
+Data structure
+int sues[N_SUES][N_PROPERTIES];
+int possible_sues_i[]; // for index of sues still in contention (starts at 500)
+int possible_sues_n; // the number of possible sues
+
+Reading in and storing the data:
+- Store the string in `line` then use strtok() to split the string, after the first ": then after "," 
+- From each token (after the first) use sscanf() to save the property and value
+- Have an array of property names and a function to get an index for the column of `sues`
+- Have a function that takes a property name and value and updates `possible_sues_i` and `possible_sues_n` with the narrowed possibilities after each filtering.
