@@ -189,7 +189,7 @@ void filter_sues(char *property, int value, char comp)
 		possible_sues_i[i] = new_possible_sues_i[i];
 	}
 	// since possible_sues_i has N_SUES elements
-	// good to explicitly assign them all to aid debugging
+	// good to explicitly assign them all to aid debugging if need be
 	for (int i = possible_sues_n; i < N_SUES; i++)
 	{
 		possible_sues_i[i] = -1;
