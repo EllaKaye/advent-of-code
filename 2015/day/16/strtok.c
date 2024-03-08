@@ -10,7 +10,7 @@ int main(void)
 	char property[13];
 	int value;
 	
-	token = strtok(line, ":");
+	token = strtok(line, ":"); // get past "Sue n:"
 	//printf("%s\n", token);
 	token = strtok(NULL, ",");
 	

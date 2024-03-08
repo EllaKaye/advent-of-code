@@ -13,6 +13,7 @@ int possible_sues_n = N_SUES; // the number of possible sues
 // function prototypes
 int get_property_index(char *property);
 void print_sues_row(int row);
+void filter_sues(char *property, int value);
 
 // default input file
 #define INPUT_FILE "input"
@@ -87,11 +88,20 @@ int main(int argc, char *argv[]) {
 		row++;
 	}
 	
-	print_sues_row(0);
-	print_sues_row(N_SUES - 1);
-	
 	// close the file
 	fclose(fptr);
+	
+	// for each property, narrow down the list of possible sues
+	filter_sues("children", 3);
+	filter_sues("cats", 7);
+	filter_sues("samoyeds", 2);
+	filter_sues("pomeranians", 3);
+	filter_sues("akitas", 0);
+	filter_sues("vizslas", 0);
+	filter_sues("goldfish", 5);
+	filter_sues("trees", 3);
+	filter_sues("cars", 2);
+	filter_sues("perfumes", 1);
 	
 	// print out the answer
 	printf("%d\n", possible_sues_i[0] + 1);
@@ -121,4 +131,40 @@ void print_sues_row(int row)
 		printf("%d ", sues[row][j]);
 	}
 	printf("\n");
+}
+
+void filter_sues(char *property, int value)
+{
+	int new_possible_sues_i[possible_sues_n];
+	int new_possible_sues_n = 0;
+	int row;
+	int col = get_property_index(property);
+	
+	// loop over rows indexed by possible_sue_i, storing indices where property matches value
+	for (int i = 0; i < possible_sues_n; i++)
+	{
+		// get row from possible_sues_i
+		row = possible_sues_i[i];
+		
+		// get value from `sues` and check against value
+		if (sues[row][col] == value || sues[row][col] == -1)
+		{
+			// update new_possible_sue_i and new_possible_sue_n;
+			new_possible_sues_i[new_possible_sues_n] = possible_sues_i[i];
+			new_possible_sues_n++;
+		}
+	}
+	
+	// update global variables
+	possible_sues_n = new_possible_sues_n;
+	for (int i = 0; i < possible_sues_n; i++)
+	{
+		possible_sues_i[i] = new_possible_sues_i[i];
+	}
+	// since possible_sues_i has N_SUES elements
+	// good to explicitly assign them all to aid debugging
+	for (int i = possible_sues_n; i < N_SUES; i++)
+	{
+		possible_sues_i[i] = -1;
+	}
 }
