@@ -151,7 +151,7 @@ void filter_sues(char *property, int value, char comp)
 			// get value from `sues` and check against value
 			if (sues[row][col] == value || sues[row][col] == -1)
 			{
-				new_possible_sues_i[new_possible_sues_n] = possible_sues_i[i];
+				new_possible_sues_i[new_possible_sues_n] = row;
 				new_possible_sues_n++;
 			}			
 		}

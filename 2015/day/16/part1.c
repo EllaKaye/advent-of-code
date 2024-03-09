@@ -150,7 +150,7 @@ void filter_sues(char *property, int value)
 		if (sues[row][col] == value || sues[row][col] == -1)
 		{
 			// update new_possible_sue_i and new_possible_sue_n;
-			new_possible_sues_i[new_possible_sues_n] = possible_sues_i[i];
+			new_possible_sues_i[new_possible_sues_n] = row;
 			new_possible_sues_n++;
 		}
 	}
