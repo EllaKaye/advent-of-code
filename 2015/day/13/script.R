@@ -23,33 +23,6 @@ mat <- input |>
 
 mat + t(mat)
 
-# optimal_happiness <- function(mat) {
-# 	
-# 	people <- row.names(mat)
-# 	n <- length(people)
-# 	
-# 	seated <- character(n - 1)
-# 	
-# 	diffs <- mat + t(mat)
-# 	max_net_happiness <- max(diffs)
-# 	max_pair <- which(diffs == max(diffs), arr.ind = TRUE) |> row.names()
-# 	happiness <- max_net_happiness
-# 	
-# 	seated[1:2] <- max_pair
-# 	last_seated <- seated[2]
-# 	
-# 	for (i in 3:(n - 1)) {
-# 		seated[i + 1] <- last_seated
-# 		possible_next <- diffs[last_seated, !(people %in% seated)]
-# 		next_seated <- possible_next[which.max(possible_next)] # keeps name with value (unlike max)
-# 		happiness <- happiness + as.numeric(next_seated) 
-# 		last_seated <- names(next_seated)
-# 		#print(from_loc, as.numeric(distance))
-# 	}
-# 	happiness
-# }
-
-# guests <- row.names(mat)
 library(gtools)
 diffs <- mat + t(mat)
 n <- nrow(diffs)
@@ -70,12 +43,69 @@ happiness <- function(vec, mat) {
 	sum(edges) # total happiness for arrangement vec
 }
 
-apply(arrangements, 1, happiness, mat = diffs) |> max()
+all_arrangement_sums <- apply(arrangements, 1, happiness, mat = diffs)
+
+all_arrangement_sums |> max()
+
+system.time(
+	{
+		arrangements <- permutations(n, n)
+		
+		part1 <- apply(arrangements, 1, happiness, mat = diffs) |> max()
+	}
+)
+
+# 0.46 secs
 
 # Part 2 ---------------------------------------------------------------------
 
 diffs2 <- diffs |> cbind(0) |> rbind(0)
 
-arrangements_with_me <- permutations(n + 1, n + 1)
+system.time(
+	{
+		arrangements_with_me <- permutations(n + 1, n + 1)
+		
+		apply(arrangements_with_me, 1, happiness, mat = diffs2) |> max()
+	}
+)
 
-apply(arrangements_with_me, 1, happiness, mat = diffs2) |> max()
+
+# Try not brute force - break the weakest link from part 1
+
+# 3.6 secs
+
+input <- aoc_input_data_frame(13, 2015, file = "example")
+
+mat <- input |> 
+	mutate(X4 = if_else(X3 == "lose", X4 * -1, X4)) |> 
+	select(from = X1, to = X11, gain = X4) |> 
+	mutate(to = str_sub(to, end = -2)) |> 
+	xtabs(gain ~ from + to, data = _)
+
+guests <- row.names(mat)
+diffs <- mat + t(mat)
+n <- nrow(diffs)
+library(gtools)
+arrangements <- permutations(n, n)
+arrangements
+which(diffs == min(diffs), arr.ind = TRUE)
+
+# start here - much smarter break the weakest edge. both edges out of the 'me'
+# node are zero. inserting 'me' between two of the other guests removes an edge.
+# e.g. if the Alice - David edge has a weight of 44, then Alice - Me - David
+# replaces the 44 with 0 + 0. So, to keep the sum maximal, we want to seat 'me'
+# between the pair with the minimal contribution to the happiness score.
+
+best_arrangement <- all_arrangement_sums |> which.max()
+
+v1 <- arrangements[best_arrangement,]
+v2 <- c(tail(v1, -1), v1[1])
+
+indices <- cbind(v1, v2)
+
+edges <- diffs[indices] 
+edges
+
+part1 - min(edges)
+
+
