@@ -27,8 +27,12 @@ update_progress <- function(df, DAY, LANG, PART, COMPLETE) {
 # we can update the update_progess lines 
 # (i.e. don't need to keep the full pipe)
 progress <- progress |> 
-	update_progress(20, "R", 1, TRUE) |> 
-	update_progress(20, "R", 2, TRUE) 
+	update_progress(13, "R", 1, TRUE) |> 
+	update_progress(13, "R", 2, TRUE) 
 
 # update csv
 write_csv(progress, progress_path)
+
+progress |> 
+	filter(!complete) |> 
+	nrow()
