@@ -8,17 +8,17 @@ browseURL("https://adventofcode.com/2024/day/4")
 # then choose appropriate paste format from addin
 # comment out once ready to run on full input
 
-# input <-
-
-initial_M <- matrix(LETTERS[1:25], 5, 5)
-Zs <- matrix("Z", 5, 3)
-Mz <- cbind(Zs, initial_M, Zs)
-ZZs <- matrix("Z", 3, 11)
-M <- rbind(ZZs, Mz, ZZs)
+# initial_M <- matrix(LETTERS[1:25], 5, 5)
+# Zs <- matrix("Z", 5, 3)
+# Mz <- cbind(Zs, initial_M, Zs)
+# ZZs <- matrix("Z", 3, 11)
+# M <- rbind(ZZs, Mz, ZZs)
 
 # Part 1 ---------------------------------------------------------------------
 
-get_words <- function(M, i, j) {
+input <- aochelpers::aoc_input_matrix(4, 2024)
+
+count_xmas <- function(M, i, j) {
   N <- M[i:(i - 3), j]
   S <- M[i:(i + 3), j]
   E <- M[i, j:(j + 3)]
@@ -39,30 +39,9 @@ get_words <- function(M, i, j) {
     SW = SW
   )
 
-  sapply(words_list, paste0, collapse = "")
-}
-
-i <- 6
-j <- 6
-
-
-get_words(M, i, j)
-
-#lines <- readLines(here::here("2024", "day", "4", "example_input"))
-
-# lines_as_matrix <- function(lines) {
-#   strsplit(lines, "") |> do.call(rbind, args = _)
-# }
-
-# M <- lines_as_matrix(lines)
-
-M <- aochelpers::aoc_input_matrix(4, 2024)
-
-count_xmas <- function(words) {
+  words <- sapply(words_list, paste0, collapse = "")
   sum(words == "XMAS")
 }
-
-get_words(M, i, j) |> count_xmas()
 
 # so we don't get indexing errors
 pad_matrix <- function(M, n, pad = "o") {
@@ -76,9 +55,9 @@ pad_matrix <- function(M, n, pad = "o") {
 }
 
 n <- 3
-nr <- nrow(M)
-nc <- ncol(M)
-M_pad <- pad_matrix(M, n)
+nr <- nrow(input)
+nc <- ncol(input)
+M <- pad_matrix(input, n)
 
 # start accumulator
 xmas <- 0
@@ -86,8 +65,8 @@ xmas <- 0
 # iterate over M (with padding) and count "XMAS" whenever an "X" is found
 for (i in (1:nc) + n) {
   for (j in (1:nr) + n) {
-    if (M_pad[i, j] == "X") {
-      xmas <- xmas + (get_words(M_pad, i, j) |> count_xmas())
+    if (M[i, j] == "X") {
+      xmas <- xmas + count_xmas(M, i, j)
     }
   }
 }
