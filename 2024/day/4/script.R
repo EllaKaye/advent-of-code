@@ -17,26 +17,46 @@ ZZs <- matrix("Z", 3, 11)
 M <- rbind(ZZs, Mz, ZZs)
 
 get_words <- function(M, i, j) {
-  N <- M[i:(i-3), j]
-  S <- M[i:(i+3), j]
-  E <- M[i, j:(j+3)]
-  W <- M[i, j:(j-3)]
-  NE <- c(M[i,j], M[i-1, j+1], M[i-2, j+2], M[i-3, j+3])
-  NW <- c(M[i,j], M[i-1, j-1], M[i-2, j-2], M[i-3, j-3])
-  SE <- c(M[i,j], M[i+1, j+1], M[i+2, j+2], M[i+3, j+3])
-  SW <- c(M[i,j], M[i+1, j-1], M[i+2, j-2], M[i+3, j-3])
-  
-  list(N=N, S=S, E=E, W=W, NE=NE, NW=NW, SE=SE, SW=SW)
+  N <- M[i:(i - 3), j]
+  S <- M[i:(i + 3), j]
+  E <- M[i, j:(j + 3)]
+  W <- M[i, j:(j - 3)]
+  NE <- c(M[i, j], M[i - 1, j + 1], M[i - 2, j + 2], M[i - 3, j + 3])
+  NW <- c(M[i, j], M[i - 1, j - 1], M[i - 2, j - 2], M[i - 3, j - 3])
+  SE <- c(M[i, j], M[i + 1, j + 1], M[i + 2, j + 2], M[i + 3, j + 3])
+  SW <- c(M[i, j], M[i + 1, j - 1], M[i + 2, j - 2], M[i + 3, j - 3])
+
+  words_vec <- list(
+    N = N,
+    S = S,
+    E = E,
+    W = W,
+    NE = NE,
+    NW = NW,
+    SE = SE,
+    SW = SW
+  )
+
+  sapply(words_vec, paste0, collapse = "")
 }
 
 i <- 6
 j <- 6
-  
+
+
 get_words(M, i, j)
 
-paste0(letters[1:4])
+lines <- readLines(here::here("2024", "day", "4", "example_input"))
 
+lines_as_matrix <- function(lines) {
+  strsplit(lines, "") |> do.call(rbind, args = _)
+}
+
+M <- lines_as_matrix(lines)
+
+# M <- aochelpers::aoc_input_matrix(4, 2024, "example_input")
+
+sum(get_words(M, i, j) == "XMAS")
 # Part 1 ---------------------------------------------------------------------
 
 # Part 2 ---------------------------------------------------------------------
-  
