@@ -33,6 +33,28 @@ progress <- progress |>
 # update csv
 write_csv(progress, progress_path)
 
+# solved in R but not C
 progress |> 
-	filter(!complete) |> 
+	select(-part) |> 
+	distinct() |> 
+	group_by(day) |> 
+	filter(any(complete)) |> # have solved in R first
+	filter(lang == "C" & !complete) 
+
+# solved in C
+progress |> 
+	select(-part) |> 
+	distinct() |> 
+	filter(lang == "C" & complete) |> 
+	nrow()
+
+# solved in either
+progress |> 
+	select(-part) |> 
+	distinct() |> 
+	group_by(day) |> 
+	filter(any(complete)) |> 
+	select(-lang) |> 
+	distinct() |> 
+	filter(complete) |> 
 	nrow()

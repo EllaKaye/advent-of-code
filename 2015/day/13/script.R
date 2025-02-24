@@ -29,6 +29,30 @@ n <- nrow(diffs)
 arrangements <- permutations(n, n)
 arrangements[2,]
 
+# Alternative: use bracelets
+library(Necklaces)
+bracelets <- cBracelets(1:n)
+# this isn't what I'm looking for
+# expect 8!/(2 *8) = 2520 bracelets
+# It is all bracelets equivalent to 1,2,3,4,5,6,7,8
+cBracelets(1:n, TRUE) 
+
+cNecklaces(1:n) # this only has 8 elements
+# They are all equivalent.
+# I don't think this package is doing what I want
+# These give equivalence relations (i.e. all necklaces/bracelents equivalent to a starting vector)
+# NOT all possible necklaces from those beads.
+
+# This would give a list of all bracelets with elements 1,2,3,4,5,6,7,8
+# but it's prohibitively slow.
+# Much faster to get all permutations
+# fBracelets(rep(1, 8)) 
+system.time(
+	{
+		f <- fBracelets(rep(1, 8)) 
+	}
+)
+# Takes 940.741 seconds (15 mins!)
 
 #diffs[cbind(v1,v2)] |> sum() # equivalent to diffs[1, 2] + diffs[2, 3] + diffs[3, 4] + diffs[4, 1]
 
@@ -44,6 +68,7 @@ happiness <- function(vec, mat) {
 }
 
 all_arrangement_sums <- apply(arrangements, 1, happiness, mat = diffs)
+#sapply(bracelets, happiness, mat = diffs)
 
 all_arrangement_sums |> max()
 

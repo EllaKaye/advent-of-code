@@ -1,0 +1,7 @@
+Permuations in C:
+https://github.com/arash-rohani/libperm
+
+Bracelets
+
+Maximal Travelling Salesman Problem?
+Held-Karp algorithm
