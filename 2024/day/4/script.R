@@ -16,6 +16,8 @@ Mz <- cbind(Zs, initial_M, Zs)
 ZZs <- matrix("Z", 3, 11)
 M <- rbind(ZZs, Mz, ZZs)
 
+# Part 1 ---------------------------------------------------------------------
+
 get_words <- function(M, i, j) {
   N <- M[i:(i - 3), j]
   S <- M[i:(i + 3), j]
@@ -26,7 +28,7 @@ get_words <- function(M, i, j) {
   SE <- c(M[i, j], M[i + 1, j + 1], M[i + 2, j + 2], M[i + 3, j + 3])
   SW <- c(M[i, j], M[i + 1, j - 1], M[i + 2, j - 2], M[i + 3, j - 3])
 
-  words_vec <- list(
+  words_list <- list(
     N = N,
     S = S,
     E = E,
@@ -37,7 +39,7 @@ get_words <- function(M, i, j) {
     SW = SW
   )
 
-  sapply(words_vec, paste0, collapse = "")
+  sapply(words_list, paste0, collapse = "")
 }
 
 i <- 6
@@ -46,17 +48,51 @@ j <- 6
 
 get_words(M, i, j)
 
-lines <- readLines(here::here("2024", "day", "4", "example_input"))
+#lines <- readLines(here::here("2024", "day", "4", "example_input"))
 
-lines_as_matrix <- function(lines) {
-  strsplit(lines, "") |> do.call(rbind, args = _)
+# lines_as_matrix <- function(lines) {
+#   strsplit(lines, "") |> do.call(rbind, args = _)
+# }
+
+# M <- lines_as_matrix(lines)
+
+M <- aochelpers::aoc_input_matrix(4, 2024)
+
+count_xmas <- function(words) {
+  sum(words == "XMAS")
 }
 
-M <- lines_as_matrix(lines)
+get_words(M, i, j) |> count_xmas()
 
-# M <- aochelpers::aoc_input_matrix(4, 2024, "example_input")
+# so we don't get indexing errors
+pad_matrix <- function(M, n, pad = "o") {
+  nr <- nrow(M)
+  nc <- ncol(M)
 
-sum(get_words(M, i, j) == "XMAS")
-# Part 1 ---------------------------------------------------------------------
+  pad_c <- matrix(pad, nr, n)
+  M_pad_c <- cbind(pad_c, M, pad_c)
+  pad_r <- matrix(pad, n, nc + 2 * n)
+  rbind(pad_r, M_pad_c, pad_r)
+}
+
+n <- 3
+nr <- nrow(M)
+nc <- ncol(M)
+M_pad <- pad_matrix(M, n)
+
+# start accumulator
+xmas <- 0
+
+# iterate over M (with padding) and count "XMAS" whenever an "X" is found
+for (i in (1:nc) + n) {
+  for (j in (1:nr) + n) {
+    if (M_pad[i, j] == "X") {
+      xmas <- xmas + (get_words(M_pad, i, j) |> count_xmas())
+    }
+  }
+}
+
+# see result
+xmas
 
 # Part 2 ---------------------------------------------------------------------
